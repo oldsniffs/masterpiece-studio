@@ -1,0 +1,13 @@
+__pycache__/
+
+# PyCharm files
+.idea/
+
+# Program-generated files
+configurations/*
+output/*
+
+logs/
+
+# Deprecated
+compisitionolden.py
