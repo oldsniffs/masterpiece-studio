@@ -49,7 +49,7 @@ class Composition:
 		self.filename = filename
 		self.__dict__.update(rules)
 
-		self.rhythm = durationsre.Rhythm(self.measures, self.timesig)
+		self.rhythm = durationsre.Rhythm(self.measure_count, self.timesig)
 		self.notation = pitchesre.Notation(self.key, self.key_scale, self.lh_ranges, self.rh_ranges, self.rhythm, None, 1, None)
 
 		self.write_ly(self.lywrite_content())
@@ -98,6 +98,6 @@ class Composition:
 		if self.pdf:
 			starting_dir = os.getcwd()
 			os.chdir(self.filepath)
-			log_debug(f"os.getcwd(): {os.getcwd()}")
+			log_debug(f"os.getcwd(): {os.getcwd()} {self.filename}")
 			subprocess.call(["lilypond", self.filename])
 			os.chdir(starting_dir)

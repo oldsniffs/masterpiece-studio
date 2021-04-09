@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QMainWindow, QApplication, QButtonGroup, QFileSystemModel, QFileDialog
-from PySide2.QtCore import QDir
+from PySide6.QtWidgets import QMainWindow, QApplication, QButtonGroup, QFileSystemModel, QFileDialog
+from PySide6.QtCore import QDir
 from studioui import Ui_MainWindow
 
 
@@ -10,7 +10,7 @@ import os
 import pickle
 import time
 
-# These mirror ComboBox item sets and are used by update keysig methods
+# Represents values in UI comboboxes, used by update keysig methods
 NOTES = ["A", "B", "C", "D", "E", "F", "G"]
 ACCIDENTALS = ["♮", "♯", "♭"]
 SCALES = ["major", "minor", "harmonic", "melodic"]
@@ -131,14 +131,12 @@ class Studio(QMainWindow):
 		elif button == self.ui.nav_write:
 			self.ui.write.raise_()
 
-	# Compose button should only be called with a valid folder selected
+	# Compose button should only be pushable with a valid folder selected
 	def compose(self):
-		Composition(self.song_folder, self.song_name+".ly", self.prepare_rules())
+		Composition(self.song_folder, self.song_name +".ly", self.collect_song_parameters())
 
-	# prepares self.configuration values to be passed to Composition constructor
-	# returns rules dict
-	# Does not hold filename or path, only music info
-	def prepare_rules(self):
+	# assembles and returns a dictionary representing new song's musical parameters derived from user inputs
+	def collect_song_parameters(self):
 		rules = {}
 		rules['measures'] = self.configuration['measures']
 		rules['timesig'] = self.configuration['timesig']
@@ -150,6 +148,7 @@ class Studio(QMainWindow):
 		rules['midi'] = self.configuration['midi']
 
 		return rules
+
 	def update_song_name(self):
 		self.song_name = self.ui.song_name.text()
 

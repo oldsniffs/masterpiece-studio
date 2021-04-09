@@ -8,12 +8,12 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
     QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
     QPixmap, QRadialGradient)
-from PySide2.QtWidgets import *
+from PySide6.QtWidgets import *
 
 
 class Ui_MainWindow(object):
@@ -735,7 +735,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.quarter_weight_image.setPixmap(QPixmap(u"data/images/quarter.png"))
+        self.quarter_weight_image.setPixmap(QPixmap(u"../data/images/quarter.png"))
         self.quarter_weight_image.setScaledContents(True)
         self.quarter_weight_image.setWordWrap(True)
         self.quarter_weight_slider = QSlider(self.weights_widget)
@@ -762,7 +762,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.half_weight_image.setPixmap(QPixmap(u"data/images/half.png"))
+        self.half_weight_image.setPixmap(QPixmap(u"../data/images/half.png"))
         self.half_weight_image.setScaledContents(True)
         self.half_weight_image.setWordWrap(True)
         self.roll_weights_label = QLabel(self.weights_widget)
@@ -801,7 +801,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.eighth_weight_image.setPixmap(QPixmap(u"data/images/eighth.png"))
+        self.eighth_weight_image.setPixmap(QPixmap(u"../data/images/eighth.png"))
         self.eighth_weight_image.setScaledContents(True)
         self.eighth_weight_image.setWordWrap(True)
         self.whole_weight_slider = QSlider(self.weights_widget)
@@ -820,7 +820,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.whole_weight_image.setPixmap(QPixmap(u"data/images/whole.png"))
+        self.whole_weight_image.setPixmap(QPixmap(u"../data/images/whole.png"))
         self.whole_weight_image.setScaledContents(True)
         self.whole_weight_image.setWordWrap(True)
         self.whole_weight_value = QLabel(self.weights_widget)
@@ -839,7 +839,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.sixteenth_weight_image.setPixmap(QPixmap(u"data/images/sixteenth.png"))
+        self.sixteenth_weight_image.setPixmap(QPixmap(u"../data/images/sixteenth.png"))
         self.sixteenth_weight_image.setScaledContents(True)
         self.sixteenth_weight_image.setWordWrap(True)
         self.sixteenth_weight_value = QLabel(self.weights_widget)
@@ -1189,7 +1189,7 @@ class Ui_MainWindow(object):
         self.label = QLabel(self.top_bar)
         self.label.setObjectName(u"label")
         self.label.setGeometry(QRect(0, 0, 80, 80))
-        self.label.setPixmap(QPixmap(u"data/images/avante-note.png"))
+        self.label.setPixmap(QPixmap(u"../data/images/avante-note.png"))
         self.write = QFrame(self.centralwidget)
         self.write.setObjectName(u"write")
         self.write.setGeometry(QRect(0, 80, 1600, 820))

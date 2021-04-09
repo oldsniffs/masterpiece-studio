@@ -1,17 +1,22 @@
 """
 Purpose: Generate "notesets" for Rhythm class
 
-Function "noteset" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
-in rhythms.py
-Note dictionaries hold musical information about the note in the context of the song and can get altered dynamically
+The function "noteset" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
+in rhythm.py
+Note dictionaries hold musical information about the note in the context of the song and may be modified dynamically
+in the case of change in timesig
 
 
 Static Assets:
 
 Note Tuple Lists
+
+
 """
 
-# [(name, beats per note in standard time)]
+from custom_logging import *
+
+# [(name, beats per note in */4 time)]
 CoreNotes = [
 	("whole", 4),
 	("half", 2),
@@ -46,17 +51,28 @@ AllNotes = CoreNotes+DottedNotes+DoubleDottedNotes
 
 # ? Is it better that functions add items, or function returns the value for the new item?
 # return "noteset" dictionary for rhythms.Rhythm
+
+
+#
 def noteset(timesig):
 	noteset = {}
+	log_info(f'Building noteset for {timesig[0]/timesig[1]} time', header="noteset")
 	for note in AllNotes:
-		noteset['beat value'] = beat_value(note)
+		noteset['beat value'] = beat_value(note[1], timesig[1])
+		log_info(f'beat value for {note[0]} note in this time is {noteset["beat value"]}')
 
 
-# move to rhythms.py
-def beat_value(note_beats, beat_note):
-	return note_beats * beat_note / 4
+# move to rhythm.py
+# don't think so
+def beat_value(note_beats, timesig_den):
+	return note_beats * timesig_den / 4
 
 def is_appropriate(beat_value):
-	beat_value
-	return beat_value <
+	#
+	pass
 
+
+
+if __name__ == "__main__":
+	test_timesig = (4,4)
+	test_noteset = noteset(test_timesig)

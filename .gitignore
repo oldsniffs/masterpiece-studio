@@ -6,8 +6,12 @@ __pycache__/
 # Program-generated files
 configurations/*
 output/*
+logs/*
 
-logs/
+
 
 # Deprecated
 compisitionolden.py
+
+
+questions.txt
