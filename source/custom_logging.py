@@ -1,5 +1,7 @@
 import logging
 import datetime
+import os
+
 
 # I assume decorators or something would improve this module
 
@@ -19,15 +21,16 @@ def log_debug(message, source='', display=True):
 	logging.debug(message)
 
 
+def log_header(message, source=''):
+	print(f'============================= {message}\n{timestamp()}\n')
+
+
 def config_log():
-	logging.basicConfig(filename=f"/logs/studio-{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
+	logging.basicConfig(filename=f"./logs/studio-{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
 
-def log_info(message, source='', display=True, header=''):
+def log_info(message, source='', display=True):
 	# skip a few spaces and print a header if provided
-	if header:
-		print(f'============================= {header}\n')
-
 	print(f"(INFO){timestamp()}{source} -- {message}")
 	logging.info(message)
 
