@@ -39,4 +39,5 @@ class Composition:
 				while measure <= segment[0]:
 					self.music[measure].__dict__.update(segment[1])
 
-
+	def fill_music(self):
+		for measure in self.music:
