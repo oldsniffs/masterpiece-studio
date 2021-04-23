@@ -5,7 +5,7 @@
 
 
 import random
-from source.custom_logging import *
+from custom_logging import *
 
 ALL_DURATION_NOTATIONS = ['1.', '1', '2.', '2', '4.', '4', '8.', '8', '16.', '16', '32.', '32', '64.', '64']
 DURATION_WEIGHTS = [(6, 1), (4, 6), (3, 5), (2, 16), (1.5, 3), (1, 26), (.75, 3), (.5, 20), (.375, 4), (.25, 6), (.1875, 0), (.125, 2), (.09375, 0), (.0625, 1)]

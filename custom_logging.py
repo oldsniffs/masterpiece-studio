@@ -26,17 +26,13 @@ def log_header(message, source=''):
 
 
 def config_log():
-	logging.basicConfig(filename=f"./logs/studio-{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
+	logging.basicConfig(filename=f"./logs/{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
 
 def log_info(message, source='', display=True):
 	# skip a few spaces and print a header if provided
 	print(f"(INFO){timestamp()}{source} -- {message}")
 	logging.info(message)
-
-
-
-
 
 def log_warning(message, source='', display=True):
 	if display:

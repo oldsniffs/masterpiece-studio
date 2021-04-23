@@ -1,5 +1,8 @@
 __pycache__/
 
+venv/
+dep/
+
 # PyCharm files
 .idea/
 
@@ -9,9 +12,4 @@ output/*
 logs/*
 
 
-
-# Deprecated
-compisitionolden.py
-
-
-questions.txt
+design_doc.html
