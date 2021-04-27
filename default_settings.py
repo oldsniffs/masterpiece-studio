@@ -1,6 +1,6 @@
 # Default configuration
 
-DEFAULT_LENGTH = 16
+DEFAULT_LENGTH = 14
 
 
 # Weights
@@ -67,27 +67,14 @@ ANCHORS_STANDARD = {
 
 # Style
 STANDARD_STYLE = {
-    'timesig': [4, 4],
+    'timesig_num': 4,
+    'timesig_den': 4,
+    'keysig_atonal': False,
+    'keysig_acc':  "",
+    'keysig_pitch': "C",
+    'keysig_scale': "Major",
     'ranges_mode': "♯",
     'bounds': BOUNDS_STANDARD,
     'weights': WEIGHTS_STANDARD,
     'anchors': ANCHORS_STANDARD,
 }
-
-
-def group_widgets(self):
-    # To help updates of repeatedly used widgets, add references to display widgets and configuration attribute
-    for name, widget in self.ui.__dict__.items():
-        namesplit = name.split("_")
-
-        if "prime_slider" in name or "pair_slider" in name:
-            # find corresponding display label
-            for n, w in self.ui.__dict__.items():
-                if n == "_".join(namesplit[:-1]) + "_display":
-                    pass
-            # find config entry
-
-        if "upper_slider" in name or "lower_slider" in name:
-            for n, w in self.ui.__dict__.items():
-                if n == "_".join(namesplit[:-1]) + "_display":
-                    widget.display = w

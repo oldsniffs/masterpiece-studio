@@ -16,7 +16,7 @@ from notes import *
 # ===================================
 #
 # Generates music from user input:
-# 1) form_segments converts user input from argument raw_segments into use-ready form as segments attribute
+# 1) form_structure converts user input from argument raw_segments into use-ready form as segments attribute
 # 2) fill_music generates music, stored in segment's []
 
 # Composition.segments[...]['music'] holds underlying musical information studio can convert to output formats
@@ -32,41 +32,73 @@ from notes import *
 
 # ['kite pool'] is fifo queue that waits for next event's measure/beat number to come up to either
 # 1) event that acts now
-# 2) toggle a bool
+# 2) toggle a bool  -- can turn on checking for next good time to insert event
 # kite: ((measure, beat), kite)
+# TODO: Segment or measure level?
 
-# Composition.segment: {'boundaries':(start measure, end measure, total measures),'musical_parameters':{dict of parameters}, measures:[list of measures]]}
-# segment dicts hold data for generating segment's music
-# a segment's music item holds a list of measure dictionaries
+# configuration.segment: {'range':(start measure, end measure, total measures),'style':{dict of parameters}, measures:[list of measures]]}
+# each segment is given ['measures'] - a list of dictionaries to be filled
 
-# measure: {'number':integer, 'musical_parameters':points to segment's item, 'music':}
-# measure dicts hold reference to parameters
+# these measures are: {'number':integer, 'musical_parameters':points to segment's item, 'kites':[], 'right_music':}
+# measure['right_music'] and ['left_music'] contains sequential list of notes
 
-# "note" in a measure needs: note, scientific pitch notation, engraving info
+# these notes are: {	type: "note type",
+# 						duration ,
+# 						starting beat in measure,
+# 						scientific pitch notation,
+# 						extra engraving info,
+# 						}
 
-# form_segments will
-# fill_music will
+# fill_music generates music, filling in each measure's ['music'] list
+# self.full_music() returns combined music lists for right and left hands
+
 
 class Composition:
-	def __init__(self, song_info, segments):
+	def __init__(self, configuration):
 
 		log_header('Composition constructor starting')
 
-		# song-level info
-		self.song_info = song_info
+		self.configuration = configuration
 
-		# [(range of measures, musical parameters as dictionary),...]
-		self.segments = segments
+		# With segment boundaries and timesigs confirmed, load duration_sheet to the style and add the "empty" measures
+		# list
+		for segment in self.configuration:
+			segment['style'].update(duration_sheet(segment['style']['timesig_den']))
+			segment['measures'] = [{
+				'number': measure,
+				'style': segment['style'],
+				'kites':[],
+				'right_music':[],
+				'left_music':[]
+			} for measure in range(segment['range'][0], segment['range'][1]+1)]
 
-		# generate music by operating on self.music
 		self.fill_music()
+		self.music = self.full_music()  # lists for right and left notation
 
-	def place_kites(self, raw_segment):
-		# takes a raw_segment reference and returns a kite pool list
-		return [
-			((1, 0), raw_segment['pairingOn']),
-		]
+	def fill_music(self):
+		log_header(f"Filling Music")
 
+		for segment in self.configuration.segments:
+			log_sub_header(f"Filling segment between measures: {segment['range'][0]} -- and -- {segment['range'][1]}")
+
+			for measure in segment['measures']:
+				self.fill_measure(measure, segment)
+
+	def fill_measure(self, measure, segment):
+		log_info(f"Filling Measure: {measure['number']}")
+		beat = 1
+
+		while beat <= measure['style']['timesig_num']:
+			f" == Beat {beat} =="
+
+			# Right
+
+			# Left
+
+			measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
+
+
+	# deliver a kite to a segment measure
 	def send_kite(self, target, kite):
 		pass
 
@@ -74,20 +106,24 @@ class Composition:
 	def allocate_flags(self):
 		pass
 
-	def fill_music(self):
-		for segment in self.segments:
-			pass
-
 	def fill_right(self, measure):
 		pass
 
 	def fill_left(self, measure):
 		pass
 
-	def get_musical_parameters(self, measure_number):
-		pass
+	# Generation Utility
+	def check_beat_strength(self, duration, count):
+		log_debug(f"Checking if a duration {duration} on count {count} is strong")
+		if (count/duration[1]) % 2 == 0:
+			log_debug(f"STRONG")
+			return True
+		# Might not need this else
+		else:
+			log_debug(f"WEAK")
+			return False
 
-	# Utility ========================
+	# Data Retrieval ========================
 
 	def music_total_measures(self):
 		total_measures = 0

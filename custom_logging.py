@@ -22,7 +22,11 @@ def log_debug(message, source='', display=True):
 
 
 def log_header(message, source=''):
-	print(f'============================= {message}\n{timestamp()}\n')
+	print(f'====================================== {message}\n{timestamp()}\n')
+
+
+def log_sub_header(message, source=''):
+	print(f'================ {message}\n{timestamp()}\n')
 
 
 def config_log():
@@ -38,16 +42,6 @@ def log_warning(message, source='', display=True):
 	if display:
 		print(f"(WARNING){timestamp()}{source} -- {message}")
 	logging.warning(message)
-
-
-def log_durations(message, source='', display=True):
-	print(f"(DURATIONS){timestamp()}{source} -- {message}")
-	logging.info(f"DURATIONS: {message}")
-
-
-def log_pitches(message, source='', display=True):
-	print(f"(PITCHES){timestamp()}{source} -- {message}")
-	logging.info(f"PITCHES: {message}")
 
 
 def log_studio(message, source='', display=True):

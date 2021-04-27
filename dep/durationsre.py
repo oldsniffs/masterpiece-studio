@@ -378,7 +378,7 @@ class Measure:
 	# Returns pairing list. empty if none
 	def check_pairing(self, duration, count):
 
-		if duration[1] in PAIRING_DURATIONS and self.check_beat_strength(duration, count) == True:
+		if duration[1] in PAIRING_DURATIONS and self.check_beat_strength(duration, count):
 			pairing = self.get_pairing(duration)
 			print(f"LOG(check_pairing): Pairing {pairing} created. Returning")
 			return pairing

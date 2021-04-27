@@ -1,7 +1,7 @@
 """
-Purpose: Generate "notesets" for Rhythm class
+Purpose: Generate "durations" for Rhythm class
 
-The function "noteset" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
+The function "duration_sheet" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
 in rhythm.py
 
 """
@@ -11,71 +11,60 @@ FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B�
 
 from custom_logging import *
 
+# Durations
 # [(name, beats per note in */4 time)]
-CoreNotes = [
+CORE_NOTES = [
 	("whole", 4),
 	("half", 2),
 	("quarter", 1),
 	("eighth", .5),
 	("sixteenth", .25),
-	("thirty-second", .125),
-	("sixty-fourth", .0625)
+	("thirtysecond", .125),
+	("sixtyfourth", .0625)
 ]
 
-DottedNotes = [
-	("d-whole", 6),
-	("d-half", 3),
-	("d-quarter", 1.5),
-	("d-eighth", .75),
-	("d-sixteenth", .375),
-	("d-thirty-second", .1875),
-	("d-sixty-fourth", .09375),
+DOTTED_NOTES = [
+	("dwhole", 6),
+	("dhalf", 3),
+	("dquarter", 1.5),
+	("deighth", .75),
+	("dsixteenth", .375),
+	("dthirtysecond", .1875),
+	("dsixtyfourth", .09375),
 ]
 
-DoubleDottedNotes = [
-	("dd-whole", 7),
-	("dd-half", 3.5),
-	("dd-quarter", 1.75),
-	("dd-eighth", .875),
-	("dd-sixteenth", .4375),
-	("dd-thirty-second", .21875),
-	("dd-sixty-fourth", .109375),
+DOUBLE_DOTTED_NOTES = [
+	("ddwhole", 7),
+	("ddhalf", 3.5),
+	("ddquarter", 1.75),
+	("ddeighth", .875),
+	("ddsixteenth", .4375),
+	("ddthirtysecond", .21875),
+	("ddsixtyfourth", .109375),
 ]
 
-AllNotes = CoreNotes+DottedNotes+DoubleDottedNotes
-
-# a noteset is a dictionary of all durations/notes with segment-specific data
-def noteset(segment_r):
-	log_header('Building Noteset')
-	log_info(f'Building noteset for {timesig[0]/timesig[1]} time')
-	return {
-
-
-	}
-	noteset = {}
-
-	for note in AllNotes:
-		noteset['beat value'] = beat_value(note[1], timesig[1])
-		log_info(f'beat value for {note[0]} note in this time is {noteset["beat value"]}')
-
-	return noteset
+PRIME_NOTES = CORE_NOTES+DOTTED_NOTES
 
 
 def beat_value(note_beats, timesig_den):
 	return note_beats * timesig_den / 4
 
-def is_appropriate(beat_value):
-	#
-	pass
 
+def convert_durations(durations, timesig_den):
+	return [(d[0], beat_value(d[1], timesig_den)) for d in durations]
+
+
+# gives prime_durations, dd durations, and increment size, given time signature
+def duration_sheet(timesig_den):
+	log_info(f'Building duration_sheet for */{timesig_den} time')
+
+	return {
+			'prime_durations': convert_durations(PRIME_NOTES, timesig_den),
+			'dd_durations': convert_durations(DOUBLE_DOTTED_NOTES, timesig_den),
+			'all_durations': convert_durations(PRIME_NOTES+DOUBLE_DOTTED_NOTES, timesig_den),
+			'increment': beat_value(CORE_NOTES[-1][1], timesig_den)  # beat value of smallest possible duration
+			}
 
 
 if __name__ == "__main__":
-	test_timesig = (4,4)
-	test_noteset = noteset(test_timesig)
-
-	smallest = 1
-	for v in test_noteset.values():
-		if v['beat value'] < smallest:
-			smallest = v['beat value']
-	print(smallest)
+	print(duration_sheet(3,4))
