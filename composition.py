@@ -1,12 +1,4 @@
-"""
-
-Measure dictionaries
-number: integer
-flags: list of strings
-right: list of notes
-left: list of notes
-
-"""
+import random
 
 from custom_logging import *
 from notes import *
@@ -16,12 +8,8 @@ from notes import *
 # ===================================
 #
 # Generates music from user input:
-# 1) form_structure converts user input from argument raw_segments into use-ready form as segments attribute
-# 2) fill_music generates music, stored in segment's []
 
 # Composition.segments[...]['music'] holds underlying musical information studio can convert to output formats
-
-# Possible return formats for technical-side use
 
 # use-ready segments have a "kites" list
 # this is a system of injecting special musical events "randomly"
@@ -30,19 +18,19 @@ from notes import *
 
 # self.segments list holds segment dicts
 
-# ['kite pool'] is fifo queue that waits for next event's measure/beat number to come up to either
-# 1) event that acts now
+# ['kite pool'] is fifo queue that waits for next event's measure/beat number to come up to either (music gen should check if top item is "ready")
+# 1) initiate an event immediately
 # 2) toggle a bool  -- can turn on checking for next good time to insert event
 # kite: ((measure, beat), kite)
-# TODO: Segment or measure level?
 
-# configuration.segment: {'range':(start measure, end measure, total measures),'style':{dict of parameters}, measures:[list of measures]]}
-# each segment is given ['measures'] - a list of dictionaries to be filled
+# segment dicts are: {'range':(start measure, end measure, total measures),'style':{dict of parameters}, measures:[list of measures]]}
+# each segment is given ['measures'] - a list of measure dictionaries to be filled
 
-# these measures are: {'number':integer, 'musical_parameters':points to segment's item, 'kites':[], 'right_music':}
-# measure['right_music'] and ['left_music'] contains sequential list of notes
+# measure dicts are: {'number':integer, 'musical_parameters':points to segment's item, 'kites':[], 'durations':[], 'right_music':[], 'left_music':[]}
+# 'right_durations' and 'left_durations' contain sequential lists of prime durations rolled in that measure
+# 'right_music' and 'left_music' contain sequential list of notes, which precisely represent the sheet music
 
-# these notes are: {	type: "note type",
+# notes are: {	type: "note type",
 # 						duration ,
 # 						starting beat in measure,
 # 						scientific pitch notation,
@@ -50,7 +38,16 @@ from notes import *
 # 						}
 
 # fill_music generates music, filling in each measure's ['music'] list
-# self.full_music() returns combined music lists for right and left hands
+# self.full_music() returns full music lists for right and left hands
+
+# If a duration the hand's durations are depleted, a new_prime_duration is called, and the returned duration is recorded
+# in ['right_durations'] or ['left_durations']
+# Then, whatever durations have a balance are processed
+#
+# 5/26
+# The above seems wrong. More simply, the duration can be stored in ['durations'], a list, and referenced from there by
+# the generator as it applies it's balance to the music, in whatever way appropriate, as notes in left or right music,
+# modifying the duration's ['balance'] integer as it does
 
 
 class Composition:
@@ -58,45 +55,64 @@ class Composition:
 
 		log_header('Composition constructor starting')
 
-		self.configuration = configuration
+		self.name = configuration.composition_name
 
-		# With segment boundaries and timesigs confirmed, load duration_sheet to the style and add the "empty" measures
-		# list
-		for segment in self.configuration:
-			segment['style'].update(duration_sheet(segment['style']['timesig_den']))
-			segment['measures'] = [{
-				'number': measure,
-				'style': segment['style'],
-				'kites':[],
-				'right_music':[],
-				'left_music':[]
-			} for measure in range(segment['range'][0], segment['range'][1]+1)]
+		self.segments = configuration.segments
 
 		self.fill_music()
-		self.music = self.full_music()  # lists for right and left notation
+		self.music = self.full_music()  # lists for right and left notation compiled from the segments
 
 	def fill_music(self):
 		log_header(f"Filling Music")
 
-		for segment in self.configuration.segments:
+		right_tract = []
+		left_tract = []
+
+		for segment in self.segments:
 			log_sub_header(f"Filling segment between measures: {segment['range'][0]} -- and -- {segment['range'][1]}")
 
 			for measure in segment['measures']:
-				self.fill_measure(measure, segment)
+				log_info(f"Filling Measure: {measure['number']}")
+				increment = measure['style']['increment']
 
-	def fill_measure(self, measure, segment):
-		log_info(f"Filling Measure: {measure['number']}")
-		beat = 1
+				for beat in range(measure['style']['timesig_num']):
+					log_debug(f"== Beat {beat} ==")
+					for inc in range(int(1/increment)):  # number of increments per beat
 
-		while beat <= measure['style']['timesig_num']:
-			f" == Beat {beat} =="
+						if measure['kites']:  # Place to process kites
+							pass
 
-			# Right
+						# Process tract
+						# Right
+						if not right_tract:
+							prime = self.new_prime(measure['prime_weights'])# Here, weights could be modified for "snap-fitting" preferences
+							right_tract.append(prime)
+							measure['right_durations'].append(prime)
 
-			# Left
+						# Left
+						if not left_tract:
+							# Skew weights for left if "dragged"
+							prime = self.new_prime(measure['prime_weights'])
+							right_tract.append(prime)
+							measure['right_durations'].append(prime)
 
-			measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
+						# increment right_live_durations
+						self.increment_live_durations(right_tract, increment)
+						self.increment_live_durations(left_tract, increment)
 
+						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
+
+	def new_duration(self, weights):
+		random.choices(weights)
+
+	def new_limited(self):  #  like new prime with limited min and/or max range
+		pass
+
+	def increment_live_durations(self, live_durations, increment):
+		for live_duration in live_durations:
+			live_duration['life'] -= increment
+			if not live_duration['life']:
+				live_durations.remove(live_duration)
 
 	# deliver a kite to a segment measure
 	def send_kite(self, target, kite):
@@ -104,12 +120,6 @@ class Composition:
 
 	# place flags for pairings, syncs, other special occurences
 	def allocate_flags(self):
-		pass
-
-	def fill_right(self, measure):
-		pass
-
-	def fill_left(self, measure):
 		pass
 
 	# Generation Utility
@@ -122,6 +132,11 @@ class Composition:
 		else:
 			log_debug(f"WEAK")
 			return False
+
+	def full_music(self):
+		log_debug(f"full_music")
+		for segment in self.segments:
+			pass
 
 	# Data Retrieval ========================
 

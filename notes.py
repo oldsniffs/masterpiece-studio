@@ -4,7 +4,12 @@ Purpose: Generate "durations" for Rhythm class
 The function "duration_sheet" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
 in rhythm.py
 
+TODO: give increment an algorithm
+
 """
+SHARP_LYNOTES = ['a,,,', 'ais,,,', 'b,,,', 'c,,', 'cis,,', 'd,,', 'dis,,', 'e,,', 'f,,', 'fis,,', 'g,,', 'gis,,', 'a,,', 'ais,,', 'b,,', 'c,', 'cis,', 'd,', 'dis,', 'e,', 'f,', 'fis,', 'g,', 'gis,', 'a,', 'ais,', 'b,', 'c', 'cis', 'd', 'dis', 'e', 'f', 'fis', 'g', 'gis', 'a', 'ais', 'b', "c'", "cis'", "d'", "dis'", "e'", "f'", "fis'", "g'", "gis'", "a'", "ais'", "b'", "c''", "cis''", "d''", "dis''", "e''", "f''", "fis''", "g''", "gis''", "a''", "ais'''", "b''", "c'''", "cis'''", "d'''", "dis'''", "e'''", "f'''", "fis'''", "g'''", "gis'''", "a'''", "ais'''", "b'''", "c''''", "cis''''", "d''''", "dis''''", "e''''", "f''''", "fis''''", "g''''", "gis''''", "a''''", "ais''''", "b''''", "c'''''"]
+FLAT_LYNOTES = ['a,,,', 'bes,,,', 'b,,,', 'c,,', 'des,,', 'd,,', 'ees,,', 'e,,', 'f,,', 'ges,,', 'g,,', 'aes,,', 'a,,', 'bes,,', 'b,,', 'c,', 'des,', 'd,', 'ees,', 'e,', 'f,', 'ges,', 'g,', 'aes,', 'a,', 'bes,', 'b,', 'c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g', 'aes', 'a', 'bes', 'b', "c'", "des'", "d'", "ees'", "e'", "f'", "ges'", "g'", "aes'", "a'", "bes'", "b'", "c''", "des''", "d''", "ees''", "e''", "f''", "ges''", "g''", "aes''", "a''", "bes''", "b''", "c'''", "des'''", "d'''", "ees'''", "e'''", "f'''", "ges'''", "g'''", "aes'''", "a'''", "bes'''", "b'''", "c''''", "des''''", "d''''", "ees''''", "e''''", "f''''", "ges''''", "g''''", "aes''''", "a''''", "bes''''", "b''''", "c'''''"]
+
 SHARP_OCTAVE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
 FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"]
 
@@ -61,10 +66,15 @@ def duration_sheet(timesig_den):
 	return {
 			'prime_durations': convert_durations(PRIME_NOTES, timesig_den),
 			'dd_durations': convert_durations(DOUBLE_DOTTED_NOTES, timesig_den),
-			'all_durations': convert_durations(PRIME_NOTES+DOUBLE_DOTTED_NOTES, timesig_den),
-			'increment': beat_value(CORE_NOTES[-1][1], timesig_den)  # beat value of smallest possible duration
+			'all_durations': convert_durations(PRIME_NOTES+DOUBLE_DOTTED_NOTES, timesig_den),  # change to just add previous two?
 			}
 
+
+# Segment-specific list of note dictionaries
+# note: {"type": string, "duration": float, "prime": int, "pair": int, length: [length weight list]}
+# length weight list: [list of int values of weights for pair lengths starting at 2]
+def notesheet():
+	return {}.update()
 
 if __name__ == "__main__":
 	print(duration_sheet(3,4))

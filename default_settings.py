@@ -67,8 +67,10 @@ ANCHORS_STANDARD = {
 
 # Style
 STANDARD_STYLE = {
+    'name': 'Standard',
     'timesig_num': 4,
     'timesig_den': 4,
+    'bpm': 60,
     'keysig_atonal': False,
     'keysig_acc':  "",
     'keysig_pitch': "C",

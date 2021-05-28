@@ -1,14 +1,14 @@
 import sys
 import os
 import pickle
-from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog
 from PySide6.QtCore import QFile, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QIntValidator
 from studio_ui import Ui_MainWindow
 
 from default_settings import *
 from custom_logging import *
 from composition import *
+from formatting import *
 
 
 class MainWindow(QMainWindow):
@@ -19,21 +19,21 @@ class MainWindow(QMainWindow):
 
         self.animation = None
 
-        self.configuration = self.startup_configuration()
-        self.active_style = self.configuration.active_segment['style']  # self.load_configuration must redo this
+        self.configuration = None
+        self.active_style = None
+        self.load_configuration(Configuration("unnamed"))
 
         self.init_ui()
         self.refresh_full_ui()
 
     # Configuration ////////////////
-    def startup_configuration(self):
-        # Could be extended to recall settings @ last close
-        # or call it refresh_configuration
-        return Configuration()
-
-    def clear_configuration(self):
-        self.configuration = Configuration()
+    def load_configuration(self, configuration):
+        self.configuration = configuration
         self.active_style = self.configuration.active_segment['style']
+        self.ui.topBar_active_configuration_display.setText(self.configuration.name)
+        self.ui.topBar_active_style_display.setText(self.active_style['name'])
+        self.ui.compose_active_configuration_display.setText(self.configuration.name)
+        self.refresh_full_ui()
 
     def init_ui(self):
 
@@ -42,9 +42,16 @@ class MainWindow(QMainWindow):
 
         # Close "Configure" sub-menu
         self.ui.styleNav.setMaximumHeight(0)
-        # Clear placeholder texts
-        self.clear_top_bar_info()
+        # Clear placeholder text
 
+        # Compose
+        self.ui.save_config_btn.clicked.connect(self.save_configuration_dialog)
+        self.ui.loaf_config_btn.clicked.connect(self.load_configuration_dialog)
+        self.ui.compose_btn.clicked.connect(self.compose)
+
+        self.ui.composition_name_entry.textChanged.connect(self.update_composition_name)
+
+        # Navigation
         self.ui.main_nav_group = QButtonGroup()
         self.ui.main_nav_group.setExclusive(True)
         self.ui.main_nav_group.buttonClicked.connect(self.navigate)
@@ -78,6 +85,7 @@ class MainWindow(QMainWindow):
         self.ui.timesig_den.setCurrentIndex(1)
         self.ui.timesig_num.textEdited.connect(self.update_timesig_num)
         self.ui.timesig_den.currentIndexChanged.connect(self.update_timesig_den)
+        self.ui.bpm_entry.textEdited.connect(self.update_bpm)
 
         # Assign same signal connections for like widgets
         for name, widget in self.ui.__dict__.items():
@@ -178,7 +186,15 @@ class MainWindow(QMainWindow):
         self.refresh_timesig_num()
         self.refresh_timesig_den()
         self.refresh_keysig()
+        self.refresh_composition_name()
+        self.refresh_bpm()
 
+    # Compose
+    def update_composition_name(self, text):
+        self.configuration.composition_name = text
+
+    def refresh_composition_name(self):
+        self.ui.composition_name_entry.setText(self.configuration.composition_name)
 
     # Rhythm
 
@@ -200,6 +216,14 @@ class MainWindow(QMainWindow):
     def refresh_timesig_den(self):
         log_debug(f"refresh timesig_den")
         self.ui.timesig_den.setCurrentText(str(self.active_style['timesig_den']))
+
+    # Bpm
+    def update_bpm(self, text):
+        if self.ui.timesig_num.text() != "":
+            self.active_style['bpm'] = int(text)
+
+    def refresh_bpm(self):
+        self.ui.bpm_entry.setText(str(self.active_style['bpm']))
 
     # Weights
     def update_weight(self, action):
@@ -274,7 +298,7 @@ class MainWindow(QMainWindow):
     def refresh_left_lower_bound(self):
         log_debug(f"refreshing left lower")
         self.ui.left_lower_slider.setValue(self.active_style['bounds']['left_lower'])
-        self.ui.left_lower_display.setText(self.slider_index_to_spn(self.active_style['bounds']['left_lower']))
+        self.ui.left_lower_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['left_lower']))
 
     def update_left_upper_bound(self):
         log_debug(f"updating left upper")
@@ -287,7 +311,7 @@ class MainWindow(QMainWindow):
     def refresh_left_upper_bound(self):
         log_debug(f"refreshing left upper")
         self.ui.left_upper_slider.setValue(self.active_style['bounds']['left_upper'])
-        self.ui.left_upper_display.setText(self.slider_index_to_spn(self.active_style['bounds']['left_upper']))
+        self.ui.left_upper_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['left_upper']))
 
     def update_right_lower_bound(self):
         log_debug(f"updating right_lower")
@@ -301,7 +325,7 @@ class MainWindow(QMainWindow):
     def refresh_right_lower_bound(self):
         log_debug(f"refreshing right lower")
         self.ui.right_lower_slider.setValue(self.active_style['bounds']['right_lower'])
-        self.ui.right_lower_display.setText(self.slider_index_to_spn(self.active_style['bounds']['right_lower']))
+        self.ui.right_lower_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['right_lower']))
 
     def update_right_upper_bound(self):
         log_debug(f"updating right upper")
@@ -314,7 +338,7 @@ class MainWindow(QMainWindow):
     def refresh_right_upper_bound(self):
         log_debug(f"refreshing right upper")
         self.ui.right_upper_slider.setValue(self.active_style['bounds']['right_upper'])
-        self.ui.right_upper_display.setText(self.slider_index_to_spn(self.active_style['bounds']['right_upper']))
+        self.ui.right_upper_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['right_upper']))
 
     def update_ranges_mode(self, btn):
         if btn == self.ui.sharp_ranges:
@@ -343,12 +367,9 @@ class MainWindow(QMainWindow):
 
     # UI Utility ////////////////////////////////////////////////////////////////////////////////// UI Utility
 
-    def clear_top_bar_info(self):
-        self.ui.active_configuration_display.setText("")
-        self.ui.active_style_display.setText("")
     # Save and Load Configurations //////
 
-    def slider_index_to_spn(self, index):
+    def bound_slider_index_to_spn(self, index):
         index += 9  # fills 0 octave
         octave = int(index / 12)
         if self.active_style['ranges_mode'] == "♯":
@@ -357,27 +378,145 @@ class MainWindow(QMainWindow):
             pitch = FLAT_OCTAVE[index % 12]
         return f"{octave}{pitch}"
 
-    # instantiates Composition, writes it out
+    def spn_to_ly(self, spn):
+        ly = spn[0].lower() # start with pitch
+
+        if "♯" in spn:  # add accidental
+            ly.append("is")
+        elif "♭" in spn:
+            ly.append("es")
+
+        octave = spn[-1]  # for each octave above or below 3 (middle octave), add "'" or ","
+        while octave != 3:
+            if octave < 3:
+                ly.append(",")
+                octave += 1
+            else:
+                ly.append("'")
+                octave -= 1
+        return ly
+
+    def index_to_ly(self, index, mode):
+        if mode == "♯":
+            return SHARP_LYNOTES[index]
+        else:
+            return FLAT_LYNOTES[index]
+
+    # Unsure /////////////////////////////////////////////////////////////////////////////////////// Unsure
+
+    def save_configuration_dialog(self):
+        save_dialog = QFileDialog.getSaveFileName(self.ui.dialog_anchor, "Save Configuration",
+                                                  f"{os.getcwd()}/configurations", "*.cf",
+                                                  options=QFileDialog.DontUseNativeDialog)
+        if save_dialog[0]:
+            configuration_filename = ""
+            if save_dialog[0][-3:] != '.cf':
+                configuration_filename = save_dialog[0] + '.cf'
+            self.write_configuration(configuration_filename)
+
+    def write_configuration(self, filename):
+        pickle.dump(self.configuration, open(filename, 'wb'))
+
+    def load_configuration_dialog(self):
+        filename = QFileDialog.getOpenFileName(self.ui.dialog_anchor, "Load Configuration",
+                                                  f"{os.getcwd()}/configurations", "*.cf",
+                                                  options=QFileDialog.DontUseNativeDialog)[0]
+        if filename:
+            try:
+                self.load_configuration(pickle.load(open(filename, 'rb')))
+            except:
+                log_info(f"Can not load configuration file: {filename}")
+
+    def save_style_dialog(self):
+        save_dialog = QFileDialog
+
+
+    # Compose ////////////////////////////////////////////////////////////////////////////////////// Compose
+
+    # instantiates Composition
+    # writes .ly
+    # call lilypond subprocess
     def compose(self):
-        music = Composition(self.configuration).music
+        composition = Composition(self.configuration)
+
+        log_debug(f"{composition.full_music()}")
+
+        # self.write_ly(self.format_ly(composition))
+        # self.run_lilypond(self.composition.filename)
+
+    # prepares string
+    def format_ly(self, composition):
+        left_music, right_music = composition.full_music()
+        return LY_BLOCK_1 + self.lywrite(left_music) + LY_BLOCK_2 + self.lywrite(right_music) + LY_BLOCK_3
+
+    # converts a hand's music list into block of lilypond string
+    # Reminder: music is a list of measures. measure is a list of notes in numbered notation (0-87)
+    def lywrite(self, music):
+        lywritten = []
+        for m in music:
+            for n in m:
+                lywritten.append(self.spn_to_ly(n))
+
+        return " ".join(lywritten)
+
+    # writes string to .ly file
+    def write_ly(self, lywritten):
+        file = open(f"{self.configuration.filepath}", 'wb')
+        pickle.dump(lywritten, file)
+
+    # Runs Lilypond on given filepath
+    def run_lilypond(self, filename):
+        pass
 
 
 # Holds data that always reflects current state of the UI, via it's active_segment, updated as user modifies inputs
-# Has methods to convert raw user input to a Composition-ready data structure
+# Has method finalize_song_parameters to prepare a Composition-ready data structure
 # Configuration segments store user data, Composition-ready segments are outputted from them
 class Configuration:
-    def __init__(self):
-        self.name = "Unnamed Configuration"
-        self.composition_name = "Unnamed"
+    def __init__(self, name):
+        self.name = name
+        self.composition_name = "Unnamed Composition"
         self.segments = [{'start': 1, 'stop': 16, 'length': 16, 'style': STANDARD_STYLE, 'measures': []}]
         self.active_segment = self.segments[0]
 
+    # Adds song data at compose time with finalized user input
+    def finalize_song_parameters(self):
+        for segment in self.segments:
+            segment['style'].update(duration_sheet(segment['style']['timesig_den']))
+            segment['style']['increment'] = self.get_increment(segment['style']['prime_durations'])
 
-    def add_segment(self):
-        self.segments
+            segment['style']['prime_weights'], segment['style']['pair_weights'] = self.get_weight_lists(segment['style']['weights'])
 
-    def sort_segments(self):
+            # Set up "unfilled" measures list
+            segment['measures'] = [{
+                'number': measure,
+                'style': segment['style'],
+                'kites':[],
+                'durations':[],
+                'right_music':[],
+                'left_music':[]
+            } for measure in range(segment['range'][0], segment['range'][1]+1)]
+
+    def set_path(self, name):
         pass
+
+    def get_increment(self, prime_durations):
+        return prime_durations[-1][1]  # as per design doc, just using sixtyfourth for now
+
+    def get_weight_lists(self, weights):
+        prime_values = []
+        prime_types = []
+        pair_values = []
+        pair_types = []
+        for k, v in weights.items():
+            if "prime" in k:
+                prime_types.append(k)
+                prime_values.append(v)
+            elif "pair" in k:
+                pair_types.append(k)
+                pair_values.append(v)
+        return (prime_types, prime_values), (pair_types, pair_values)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

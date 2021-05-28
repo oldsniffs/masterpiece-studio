@@ -292,6 +292,7 @@ class Measure:
 					new_duration = virgin_duration
 					pairing = self.check_pairing(new_duration, count)
 
+				# it starts on beat but won't land on one, and needs to split the prime (virgin) and generate a carryover
 				elif count == 0 and virgin_duration[1] % 1 == 0:
 					for duration in [d for d in self.whole_beat_durations if d[1] + len(pattern) <= self.beats_per_measure]:
 						if duration[1] == virgin_duration[1]:
@@ -309,7 +310,7 @@ class Measure:
 					print(f"LOG: Virgin OVERFLOWS by {virgin_duration[1]-(1-count)}")
 					new_duration = self.complete_beat(1-count, new_beat, count)
 					carryover = virgin_duration[1]-(1-count)
-					count += (1-count)-new_duration[1]
+					count += (1-count)-new_duration[1]  # couldn't just make  count=1?
 
 				print(f"LOG: Appending new_duration {new_duration} to new_beat at count {count}")
 				new_beat.append(((new_duration), count))
@@ -382,7 +383,6 @@ class Measure:
 			pairing = self.get_pairing(duration)
 			print(f"LOG(check_pairing): Pairing {pairing} created. Returning")
 			return pairing
-
 
 	def check_beat_strength(self, duration, count):
 		print(f"LOG(check_beat_strength): Checking if a duration {duration} on count {count} is strong")
