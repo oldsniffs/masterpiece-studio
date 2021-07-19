@@ -77,4 +77,4 @@ def notesheet():
 	return {}.update()
 
 if __name__ == "__main__":
-	print(duration_sheet(3,4))
+	print(duration_sheet(2))

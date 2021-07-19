@@ -2,13 +2,12 @@ import sys
 import os
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog
-from PySide6.QtCore import QFile, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
 from default_settings import *
-from custom_logging import *
-from composition import *
-from formatting import *
+from src.composition import *
+from src.formatting import *
 
 
 class MainWindow(QMainWindow):
@@ -238,7 +237,7 @@ class MainWindow(QMainWindow):
         self.ui.weights_arch_widget.findChild(QLabel, weight+"_display").setText(str(self.active_style['weights'][weight]))
 
     # Anchors
-    def update_anchor(self, action):
+    def update_anchor(self):
         log_debug(f"updating anchor from dial: {self.sender().objectName()}")
         anchor_setting = self.sender().objectName()[:-5]
         self.active_style['anchors'][anchor_setting] = self.sender().sliderPosition()

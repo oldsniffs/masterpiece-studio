@@ -1,6 +1,6 @@
 import random
 
-from custom_logging import *
+from src.custom_logging import *
 from notes import *
 
 # Composition class
@@ -46,8 +46,9 @@ from notes import *
 #
 # 5/26
 # The above seems wrong. More simply, the duration can be stored in ['durations'], a list, and referenced from there by
-# the generator as it applies it's balance to the music, in whatever way appropriate, as notes in left or right music,
-# modifying the duration's ['balance'] integer as it does
+# the generator as it applies its balance to the music, in whatever way appropriate, as notes in left or right music,
+# modifying the duration's ['balance'] integer as it does.
+# 7/9 If Composer / Composition pattern is used, Composer only needs to track "durations" in one place
 
 
 class Composition:
@@ -59,14 +60,19 @@ class Composition:
 
 		self.segments = configuration.segments
 
+		# Generation Variables
+		self.right_live_durations = []
+		self.left_live_durations = []
+
 		self.fill_music()
-		self.music = self.full_music()  # lists for right and left notation compiled from the segments
+		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
+
+		# Ideas for change
+		self.current_measure
+		self.interval
 
 	def fill_music(self):
 		log_header(f"Filling Music")
-
-		right_tract = []
-		left_tract = []
 
 		for segment in self.segments:
 			log_sub_header(f"Filling segment between measures: {segment['range'][0]} -- and -- {segment['range'][1]}")
@@ -82,37 +88,40 @@ class Composition:
 						if measure['kites']:  # Place to process kites
 							pass
 
-						# Process tract
 						# Right
-						if not right_tract:
-							prime = self.new_prime(measure['prime_weights'])# Here, weights could be modified for "snap-fitting" preferences
-							right_tract.append(prime)
+
+						# check empty
+						if not self.right_live_durations:
+							prime = self.new_duration(measure['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
+							self.right_live_durations.append(prime)
 							measure['right_durations'].append(prime)
+						# Mid-duration harmony insertion
 
 						# Left
-						if not left_tract:
+						if not self.left_live_durations:
 							# Skew weights for left if "dragged"
-							prime = self.new_prime(measure['prime_weights'])
-							right_tract.append(prime)
-							measure['right_durations'].append(prime)
+							prime = self.new_duration(measure['prime_weights'])
+							self.left_live_durations.append(prime)
+							measure['left_durations'].append(prime)
+						# Mid-duration harmony insertion
 
-						# increment right_live_durations
-						self.increment_live_durations(right_tract, increment)
-						self.increment_live_durations(left_tract, increment)
+
+						self.increment_live_durations(increment)
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
 	def new_duration(self, weights):
 		random.choices(weights)
 
-	def new_limited(self):  #  like new prime with limited min and/or max range
+	def new_limited(self):  #  like new prime with limited min and/or max range    ---- might not use this one
 		pass
 
-	def increment_live_durations(self, live_durations, increment):
-		for live_duration in live_durations:
+	# increments durations, removes dead ones
+	def increment_live_durations(self, increment):
+		for live_duration in self.right_live_durations + self.left_live_durations:
 			live_duration['life'] -= increment
 			if not live_duration['life']:
-				live_durations.remove(live_duration)
+				del[live_duration]
 
 	# deliver a kite to a segment measure
 	def send_kite(self, target, kite):
@@ -122,7 +131,8 @@ class Composition:
 	def allocate_flags(self):
 		pass
 
-	# Generation Utility
+	# Generation Utility ========================
+
 	def check_beat_strength(self, duration, count):
 		log_debug(f"Checking if a duration {duration} on count {count} is strong")
 		if (count/duration[1]) % 2 == 0:
@@ -138,8 +148,7 @@ class Composition:
 		for segment in self.segments:
 			pass
 
-	# Data Retrieval ========================
-
+	# Info ========================
 	def music_total_measures(self):
 		total_measures = 0
 		for segment in self.music:
