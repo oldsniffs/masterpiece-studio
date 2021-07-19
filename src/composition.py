@@ -23,8 +23,8 @@ from notes import *
 # 2) toggle a bool  -- can turn on checking for next good time to insert event
 # kite: ((measure, beat), kite)
 
-# segment dicts are: {'range':(start measure, end measure, total measures),'style':{dict of parameters}, measures:[list of measures]]}
-# each segment is given ['measures'] - a list of measure dictionaries to be filled
+# segment dicts are: {'start':int, 'stop': int, 'length': int, 'style':{dict of parameters}, measures:[list of measures]]}
+# each segment contains ['measures'] - a list of measure dictionaries to be filled
 
 # measure dicts are: {'number':integer, 'musical_parameters':points to segment's item, 'kites':[], 'durations':[], 'right_music':[], 'left_music':[]}
 # 'right_durations' and 'left_durations' contain sequential lists of prime durations rolled in that measure
@@ -63,27 +63,27 @@ class Composition:
 		# Generation Variables
 		self.right_live_durations = []
 		self.left_live_durations = []
+		self.current_measure = self.segments[0]['measures'][0]
+		self.increment = self.current_measure['style']['increment']
 
 		self.fill_music()
 		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
 
-		# Ideas for change
-		self.current_measure
-		self.interval
 
 	def fill_music(self):
 		log_header(f"Filling Music")
 
 		for segment in self.segments:
 			log_sub_header(f"Filling segment between measures: {segment['range'][0]} -- and -- {segment['range'][1]}")
+			self.increment = segment['style']['increment']
 
 			for measure in segment['measures']:
+				self.current_measure = measure
 				log_info(f"Filling Measure: {measure['number']}")
-				increment = measure['style']['increment']
 
 				for beat in range(measure['style']['timesig_num']):
 					log_debug(f"== Beat {beat} ==")
-					for inc in range(int(1/increment)):  # number of increments per beat
+					for inc in range(int(1/self.increment)):  # number of increments per beat
 
 						if measure['kites']:  # Place to process kites
 							pass
@@ -106,7 +106,8 @@ class Composition:
 						# Mid-duration harmony insertion
 
 
-						self.increment_live_durations(increment)
+						self.increment_live_durations()
+
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
@@ -117,19 +118,11 @@ class Composition:
 		pass
 
 	# increments durations, removes dead ones
-	def increment_live_durations(self, increment):
+	def increment_live_durations(self):
 		for live_duration in self.right_live_durations + self.left_live_durations:
-			live_duration['life'] -= increment
+			live_duration['life'] -= self.increment
 			if not live_duration['life']:
 				del[live_duration]
-
-	# deliver a kite to a segment measure
-	def send_kite(self, target, kite):
-		pass
-
-	# place flags for pairings, syncs, other special occurences
-	def allocate_flags(self):
-		pass
 
 	# Generation Utility ========================
 
@@ -142,11 +135,6 @@ class Composition:
 		else:
 			log_debug(f"WEAK")
 			return False
-
-	def full_music(self):
-		log_debug(f"full_music")
-		for segment in self.segments:
-			pass
 
 	# Info ========================
 	def music_total_measures(self):
