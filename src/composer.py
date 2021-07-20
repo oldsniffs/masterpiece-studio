@@ -65,6 +65,7 @@ class Composer:
 		self.left_live_durations = []
 		self.current_measure = self.segments[0]['measures'][0]
 		self.increment = self.current_measure['style']['increment']
+		self.count = 0
 
 		self.fill_music()
 		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
@@ -95,7 +96,7 @@ class Composer:
 							prime = self.new_duration(measure['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
 							self.right_live_durations.append(prime)
 							measure['right_durations'].append(prime)
-						# Mid-duration harmony insertion
+						# Harmony insertion
 
 						# Left
 						if not self.left_live_durations:
@@ -103,11 +104,12 @@ class Composer:
 							prime = self.new_duration(measure['prime_weights'])
 							self.left_live_durations.append(prime)
 							measure['left_durations'].append(prime)
-						# Mid-duration harmony insertion
+						# Harmony insertion
 
-
+						self.count += self.increment
 						self.increment_live_durations()
 
+				self.count = 0
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
@@ -131,7 +133,6 @@ class Composer:
 		if (count/duration[1]) % 2 == 0:
 			log_debug(f"STRONG")
 			return True
-		# Might not need this else
 		else:
 			log_debug(f"WEAK")
 			return False
