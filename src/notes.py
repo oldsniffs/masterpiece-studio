@@ -60,11 +60,12 @@ def convert_durations(durations, timesig_den):
 
 
 # gives prime_durations, dd durations, and all durations, given time signature
+# this dict is passed into segment['style'].update()
 def duration_sheet(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
 	prime_durations = convert_durations(PRIME_NOTES, timesig_den)
 	dd_durations = convert_durations(DOUBLE_DOTTED_NOTES, timesig_den)
-	return {'prime': prime_durations, 'dd': dd_durations, 'all': prime_durations + dd_durations}
+	return {'prime_durations': prime_durations, 'dd_durations': dd_durations, 'all_durations': prime_durations + dd_durations}
 
 
 # Segment-specific list of note dictionaries

@@ -494,7 +494,7 @@ class Configuration:
                 'durations':[],
                 'right_music':[],
                 'left_music':[]
-            } for measure in range(segment['range'][0], segment['range'][1]+1)]
+            } for measure in range(segment['start'][0], segment['stop'][1]+1)]
 
     def set_path(self, name):
         pass
