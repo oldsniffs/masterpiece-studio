@@ -51,7 +51,7 @@ from notes import *
 # 7/9 If Composer / Composition pattern is used, Composer only needs to track "durations" in one place
 
 
-class Composition:
+class Composer:
 	def __init__(self, configuration):
 
 		log_header('Composition constructor starting')

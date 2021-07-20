@@ -6,7 +6,7 @@ from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
 from default_settings import *
-from src.composition import *
+from src.composer import *
 from src.formatting import *
 
 
@@ -436,7 +436,7 @@ class MainWindow(QMainWindow):
     # writes .ly
     # call lilypond subprocess
     def compose(self):
-        composition = Composition(self.configuration)
+        composition = Composer(self.configuration)
 
         log_debug(f"{composition.full_music()}")
 
