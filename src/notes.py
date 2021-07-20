@@ -1,3 +1,5 @@
+from custom_logging import *
+
 """
 Purpose: Generate "durations" for Rhythm class
 
@@ -13,8 +15,6 @@ FLAT_LYNOTES = ['a,,,', 'bes,,,', 'b,,,', 'c,,', 'des,,', 'd,,', 'ees,,', 'e,,',
 SHARP_OCTAVE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
 FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"]
 
-
-from custom_logging import *
 
 # Durations
 # [(name, beats per note in */4 time)]
@@ -59,15 +59,12 @@ def convert_durations(durations, timesig_den):
 	return [(d[0], beat_value(d[1], timesig_den)) for d in durations]
 
 
-# gives prime_durations, dd durations, and increment size, given time signature
+# gives prime_durations, dd durations, and all durations, given time signature
 def duration_sheet(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
-
-	return {
-			'prime_durations': convert_durations(PRIME_NOTES, timesig_den),
-			'dd_durations': convert_durations(DOUBLE_DOTTED_NOTES, timesig_den),
-			'all_durations': convert_durations(PRIME_NOTES+DOUBLE_DOTTED_NOTES, timesig_den),  # change to just add previous two?
-			}
+	prime_durations = convert_durations(PRIME_NOTES, timesig_den)
+	dd_durations = convert_durations(DOUBLE_DOTTED_NOTES, timesig_den)
+	return {'prime': prime_durations, 'dd': dd_durations, 'all': prime_durations + dd_durations}
 
 
 # Segment-specific list of note dictionaries
@@ -75,6 +72,7 @@ def duration_sheet(timesig_den):
 # length weight list: [list of int values of weights for pair lengths starting at 2]
 def notesheet():
 	return {}.update()
+
 
 if __name__ == "__main__":
 	print(duration_sheet(2))
