@@ -11,8 +11,6 @@ configurations/*
 output/*
 logs/*
 
-src/studio_ui.ui
-
 .gitignore
 design_doc.html
 design_decisions.odt
