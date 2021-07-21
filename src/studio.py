@@ -484,7 +484,7 @@ class Configuration:
             segment['style'].update(duration_sheet(segment['style']['timesig_den']))
             segment['style']['increment'] = self.get_increment(segment['style']['prime_durations'])
 
-            segment['style']['prime_weights'], segment['style']['pair_weights'] = self.get_weight_lists(segment['style']['weights'])
+            segment['style']['prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
 
             # Set up "unfilled" measures list
             segment['measures'] = [{
@@ -502,21 +502,25 @@ class Configuration:
     def get_increment(self, prime_durations):
         return prime_durations[-1][1]  # as per design doc, just using sixtyfourth for now
 
+    # As per design doc, if notesheet is implemented, this will change
     def get_weight_lists(self, weights):
-        prime_values = []
-        prime_types = []
-        pair_values = []
-        pair_types = []
-        for k, v in weights.items():
-            if "prime" in k:
-                prime_types.append(k)
-                prime_values.append(v)
-            elif "pair" in k:
-                pair_types.append(k)
-                pair_values.append(v)
-        return (prime_types, prime_values), (pair_types, pair_values)
+        prime_weights = [weights['whole_prime'], weights['half_prime'],
+                         weights['quarter_prime'], weights['eighth_prime'],
+                         weights['sixteenth_prime'], weights['thirtysecond_prime'],
+                         weights['sixtyfourth_prime'],
+                         weights['dwhole_prime'], weights['dhalf_prime'],
+                         weights['dquarter_prime'], weights['deighth_prime'],
+                         weights['dsixteenth_prime'], weights['dthirtysecond_prime'],
+                         weights['dsixtyfourth_prime']]
 
+        pair_weights = [weights['whole_pair'], weights['half_pair'],
+                        weights['quarter_pair'], weights['eighth_pair'],
+                        weights['sixteenth_pair'], weights['thirtysecond_pair'],
+                        weights['sixtyfourth_pair']]
 
+        length_weights = []
+
+        return prime_weights, pair_weights, length_weights
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
