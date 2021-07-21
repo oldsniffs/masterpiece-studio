@@ -292,7 +292,7 @@ class MainWindow(QMainWindow):
             self.active_style['bounds']['left_lower'] = self.ui.left_upper_slider.sliderPosition()
         else:
             self.active_style['bounds']['left_lower'] = self.ui.left_lower_slider.sliderPosition()
-        self.refresh_left_lower_bound('left_lower')
+        self.refresh_left_lower_bound()
 
     def refresh_left_lower_bound(self):
         log_debug(f"refreshing left lower")
