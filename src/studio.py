@@ -486,7 +486,7 @@ class Configuration:
 
             segment['style']['prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
 
-            # Set up "unfilled" measures list
+            # Set up ready-to-use measures list
             segment['measures'] = [{
                 'number': measure,
                 'style': segment['style'],
@@ -521,6 +521,8 @@ class Configuration:
         length_weights = []
 
         return prime_weights, pair_weights, length_weights
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 

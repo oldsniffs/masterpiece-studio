@@ -106,8 +106,7 @@ class Composer:
 							measure['left_durations'].append(prime)
 						# Harmony insertion
 
-						self.count += self.increment
-						self.increment_live_durations()
+						self.increment_count()
 
 				self.count = 0
 
@@ -120,7 +119,8 @@ class Composer:
 		pass
 
 	# increments durations, removes dead ones
-	def increment_live_durations(self):
+	def increment_count(self):
+		self.count += self.increment
 		for live_duration in self.right_live_durations + self.left_live_durations:
 			live_duration['life'] -= self.increment
 			if not live_duration['life']:
