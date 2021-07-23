@@ -3,13 +3,13 @@ import random
 from src.custom_logging import *
 from notes import *
 
-# Composition class
+# Composer class
 #
 # ===================================
 #
 # Generates music from user input:
 
-# Composition.segments[...]['music'] holds underlying musical information studio can convert to output formats
+# Composer.segments[...]['music'] holds underlying musical information studio can convert to output formats
 
 # use-ready segments have a "kites" list
 # this is a system of injecting special musical events "randomly"
@@ -75,7 +75,7 @@ class Composer:
 		log_header(f"Filling Music")
 
 		for segment in self.segments:
-			log_sub_header(f"Filling segment between measures: {segment['range'][0]} -- and -- {segment['range'][1]}")
+			log_sub_header(f"Filling segment consisting of measures: {segment['start']} -- and -- {segment['stop']}")
 			self.increment = segment['style']['increment']
 
 			for measure in segment['measures']:

@@ -436,6 +436,7 @@ class MainWindow(QMainWindow):
     # writes .ly
     # call lilypond subprocess
     def compose(self):
+        self.configuration.finalize_song_parameters()
         composition = Composer(self.configuration)
 
         log_debug(f"{composition.full_music()}")
@@ -494,7 +495,7 @@ class Configuration:
                 'durations':[],
                 'right_music':[],
                 'left_music':[]
-            } for measure in range(segment['start'][0], segment['stop'][1]+1)]
+            } for measure in range(segment['start'], segment['stop'])]
 
     def set_path(self, name):
         pass
