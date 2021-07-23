@@ -60,7 +60,7 @@ class Composer:
 
 		self.segments = configuration.segments
 
-		# Generation Variables
+		# Initialize Dynamic Generation Variables
 		self.right_live_durations = []
 		self.left_live_durations = []
 		self.current_measure = self.segments[0]['measures'][0]
@@ -69,7 +69,6 @@ class Composer:
 
 		self.fill_music()
 		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
-
 
 	def fill_music(self):
 		log_header(f"Filling Music")
@@ -90,8 +89,6 @@ class Composer:
 							pass
 
 						# Right
-
-						# check empty
 						if not self.right_live_durations:
 							prime = self.new_duration(measure['style']['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
 							self.right_live_durations.append(prime)

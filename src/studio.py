@@ -492,7 +492,8 @@ class Configuration:
                 'number': measure,
                 'style': segment['style'],
                 'kites':[],
-                'durations':[],
+                'right_durations':[],
+                'left_durations':[],
                 'right_music':[],
                 'left_music':[]
             } for measure in range(segment['start'], segment['stop'])]
@@ -530,4 +531,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
