@@ -93,7 +93,7 @@ class Composer:
 
 						# check empty
 						if not self.right_live_durations:
-							prime = self.new_duration(measure['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
+							prime = self.new_duration(measure['style']['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
 							self.right_live_durations.append(prime)
 							measure['right_durations'].append(prime)
 						# Harmony insertion
