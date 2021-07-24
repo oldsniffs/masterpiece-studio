@@ -504,6 +504,7 @@ class Configuration:
     def get_increment(self, prime_durations):
         return prime_durations[-1][1]  # as per design doc, just using sixtyfourth for now
 
+    #
     # As per design doc, if notesheet is implemented, this will change
     def get_weight_lists(self, weights):
         prime_weights = [weights['whole_prime'], weights['half_prime'],

@@ -89,18 +89,24 @@ class Composer:
 							pass
 
 						# Right
+						# tract is empty, new duration required
 						if not self.right_live_durations:
-							prime = self.new_duration(measure['style']['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
-							self.right_live_durations.append(prime)
+							prime = self.new_duration(measure['style']['prime_durations'], measure['style']['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
 							measure['right_durations'].append(prime)
+							self.right_live_durations.append(prime)
+						# Duration distribution - assignments to ['right_notes']
+						for live_duration in self.right_live_durations:
+							
+
 						# Harmony insertion
+
 
 						# Left
 						if not self.left_live_durations:
 							# Skew weights for left if "dragged"
-							prime = self.new_duration(measure['prime_weights'])
-							self.left_live_durations.append(prime)
+							prime = self.new_duration(measure['style']['prime_durations'], measure['style']['prime_weights'])
 							measure['left_durations'].append(prime)
+							self.left_live_durations.append(prime)
 						# Harmony insertion
 
 						self.increment_count()
@@ -109,16 +115,14 @@ class Composer:
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
-	def new_duration(self, weights):
-		random.choices(weights)
-
-	def new_limited(self):  #  like new prime with limited min and/or max range    ---- might not use this one
-		pass
+	def new_duration(self, durations, weights):
+		duration = random.choices(durations, weights)
+		return {'name': duration[0], 'value': duration[1], 'remainder': duration[1], 'annotations': []}
 
 	# increments durations, removes dead ones
 	def increment_count(self):
 		self.count += self.increment
-		for live_duration in self.right_live_durations + self.left_live_durations:
+		for live_duration in  + self.left_live_durations + self.right_live_durations:
 			live_duration['life'] -= self.increment
 			if not live_duration['life']:
 				del[live_duration]
