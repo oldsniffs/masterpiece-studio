@@ -12,5 +12,5 @@ output/*
 logs/*
 
 .gitignore
-design_doc.html
-design_decisions.odt
+#design_doc.html
+#design_decisions.odt

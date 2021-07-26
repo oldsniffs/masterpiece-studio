@@ -1,0 +1,93 @@
+<DOCTYPE! html>
+<html>
+
+<head>
+    <title>Masterpiece Studio Design Document</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Akaya+Telivigala" type="text/css">
+
+    <style>
+
+        body {
+            background-color: rgba(7, 17, 13, 0.829);
+            font-family: 'Trebuchet MS';
+            color: rgb(214, 198, 146);
+        }
+
+        #main-title {
+            font-size: 34px;
+            padding: 10px 0px 0px 0px;
+        }
+
+        .file-header {
+            font-size: 22
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<main>
+
+<div>
+    <h1 id="main-title">Masterpiece Studio Design Document</h3>
+</div>
+
+<div>
+
+    <h2>
+        the separate processes that generate rhythms and pitches can communicate with eachother by:
+        
+        <ul>
+            <li>flags in dictionaries</li>
+        </ul>
+    </h2>
+
+
+    <h2>Specific Files</h2>
+
+    <div>
+        <h3 class="file-header">notes.py</h3>
+        <p>noteset gets called by rhythm generator initially, and additionally if it requires new notesets, as in the case of a time signature change</p>
+
+    </div>
+
+    <div>
+        <h3 class="file-header">rhythms.py</h3>
+        <p>increment system allows careful division, checking, and tracking. tracking by previous note was messy</p>
+        <p>increment is the smallest possible beat value</p>
+    </div>
+
+    <div>
+        <h3 class="file-header">Update and Refresh</h3>
+        <p>Refresh needs to cover any UI elements that the updated configuration info applies to</p>>
+    </div>
+
+    <div>
+        <h3 class="file-header">What more could it do?</h3>
+        <p>Weights for super-note durations</p>>
+    </div>
+
+    <div>
+        <h3 class="file-header">Saving/Loading styles for segments</h3>
+        <p>This will be added later. The MVP only needs 1 segment and 1 style per song</p>>
+    </div>
+
+    <div>
+        <h3 class=""file-header">Ways to improve code</h3>
+        <p>The dataclasses decorator would help organize information more smoothly than the current patchwork of custom functions</p>
+        <p>For example, sorting weights in finalize_song_parameters</p>
+    </div>
+
+</div>
+
+</main>
+
+
+
+</body>
+
+</html>
