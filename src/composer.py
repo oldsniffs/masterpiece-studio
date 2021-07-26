@@ -96,7 +96,7 @@ class Composer:
 							self.right_live_durations.append(prime)
 						# Duration distribution - assignments to ['right_notes']
 						for live_duration in self.right_live_durations:
-							
+
 
 						# Harmony insertion
 
