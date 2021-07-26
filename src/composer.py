@@ -88,6 +88,18 @@ class Composer:
 						if measure['kites']:  # Place to process kites
 							pass
 
+						"""Must fulfill:
+						1. Proper duration division
+						What: durations do not cross through beats if they did not start on one
+						How: If duration does not start on a beat and crosses a beat marker, spawn a note or notes
+						tied together to the start of the next beat, then spawn tied notes to complete the duration's 
+						term
+						Precisely how durations should be allocated among it's tied notes before and after beats:
+						
+						2. Sync factor
+						3. Left weight modification - 
+						"""
+
 						# Right
 						# tract is empty, new duration required
 						if not self.right_live_durations:
