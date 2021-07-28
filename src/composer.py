@@ -66,6 +66,7 @@ class Composer:
 		self.current_measure = self.segments[0]['measures'][0]
 		self.increment = self.current_measure['style']['increment']
 		self.count = 0
+		self.note_tally = [0 for d in len()]
 
 		self.fill_music()
 		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
@@ -97,18 +98,23 @@ class Composer:
 						Precisely how durations should be allocated among it's tied notes before and after beats:
 						
 						2. Sync factor
-						3. Left weight modification - 
+						3. Left weight modification -
 						"""
 
 						# Right
 						# tract is empty, new duration required
 						if not self.right_live_durations:
-							prime = self.new_duration(measure['style']['prime_durations'], measure['style']['prime_weights']) # Here, weights could be modified for "snap-fitting" preferences
+							durations = measure['style']['prime_durations']
+							weights = measure['style']['prime_weights']
+
+							# Adjust weights for "snapping"
+
+							prime = self.new_duration(durations, weights) # Here, weights could be modified for "snap-fitting" preferences
 							measure['right_durations'].append(prime)
 							self.right_live_durations.append(prime)
 						# Duration distribution - assignments to ['right_notes']
 						for live_duration in self.right_live_durations:
-
+							# Establish hierarchy of any beat marks crossed
 
 						# Harmony insertion
 

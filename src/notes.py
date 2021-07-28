@@ -49,6 +49,7 @@ DOUBLE_DOTTED_NOTES = [
 ]
 
 PRIME_NOTES = CORE_NOTES+DOTTED_NOTES
+ALL_NOTES = PRIME_NOTES + DOUBLE_DOTTED_NOTES
 
 
 def beat_value(note_beats, timesig_den):
