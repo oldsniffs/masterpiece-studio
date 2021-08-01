@@ -99,6 +99,8 @@ class Composer:
 						
 						2. Sync factor
 						3. Left weight modification -
+						
+						8/1 As of, note proportion maintenance is entirely in design decisions but being implemented yet 
 						"""
 
 						# Right
@@ -108,6 +110,10 @@ class Composer:
 							weights = measure['style']['prime_weights']
 
 							# Adjust weights for "snapping"
+							# Use snap slider + distance to beat markers + note proportion needs
+
+							# check for distance to beat markers
+							# - snap role  snap slider,  note needs
 
 							prime = self.new_duration(durations, weights) # Here, weights could be modified for "snap-fitting" preferences
 							measure['right_durations'].append(prime)

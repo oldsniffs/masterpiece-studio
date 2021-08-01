@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
     def refresh_composition_name(self):
         self.ui.composition_name_entry.setText(self.configuration.composition_name)
 
-    # Rhythm
+    # Rhythm /////
 
     # Timesig
     # UI will accept bad input, but will disable compose button until input is valid
@@ -236,6 +236,22 @@ class MainWindow(QMainWindow):
         self.ui.weights_arch_widget.findChild(QSlider, weight+"_slider").setValue(self.active_style['weights'][weight])
         self.ui.weights_arch_widget.findChild(QLabel, weight+"_display").setText(str(self.active_style['weights'][weight]))
 
+    # \\ Snap
+
+    def update_snap(self, action):
+        log_debug(f"updating snap")
+        self.active_style['snap'] = self.ui.snap_slider.value()
+
+    def refresh_snap(self, snap):
+        log_debug(f"refreshing snap")
+        self.ui.snap_slider.setValue(snap)
+        self.ui.snap_label.setText(str(snap))
+
+    # \\ Rest Conversion
+
+
+    # Pitch /////
+
     # Anchors
     def update_anchor(self):
         log_debug(f"updating anchor from dial: {self.sender().objectName()}")
@@ -247,8 +263,6 @@ class MainWindow(QMainWindow):
         log_debug(f"refreshing anchor: {anchor_setting}")
         self.ui.anchors_arch_widget.findChild(QDial, anchor_setting+"_dial").setValue(self.active_style['anchors'][anchor_setting])
         self.ui.anchors_arch_widget.findChild(QLabel, anchor_setting+"_display").setText(str(self.active_style['anchors'][anchor_setting]))
-
-    # Pitch /////
 
     # Keysig
     # Updates for combo boxes using parallel lists
