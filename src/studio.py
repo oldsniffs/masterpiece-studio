@@ -98,6 +98,8 @@ class MainWindow(QMainWindow):
                 if "longevity_dial" in name or "spawn_dial" in name or "gravity_dial" in name or "velocity_dial" in name:
                     widget.actionTriggered.connect(self.update_anchor)
 
+        self.ui.snap_slider.actionTriggered.connect(self.update_snap)
+        self.ui.rest_slider.actionTriggered.connect(self.update_rest)
 
         # Pitch ///
         # Keysig
@@ -187,6 +189,7 @@ class MainWindow(QMainWindow):
         self.refresh_keysig()
         self.refresh_composition_name()
         self.refresh_bpm()
+        self.refresh_snap()
 
     # Compose
     def update_composition_name(self, text):
@@ -195,6 +198,7 @@ class MainWindow(QMainWindow):
     def refresh_composition_name(self):
         self.ui.composition_name_entry.setText(self.configuration.composition_name)
 
+    #
     # Rhythm /////
 
     # Timesig
@@ -240,16 +244,27 @@ class MainWindow(QMainWindow):
 
     def update_snap(self, action):
         log_debug(f"updating snap")
-        self.active_style['snap'] = self.ui.snap_slider.value()
+        self.active_style['snap'] = self.ui.snap_slider.sliderPosition()
+        self.refresh_snap()
 
-    def refresh_snap(self, snap):
+    def refresh_snap(self):
         log_debug(f"refreshing snap")
-        self.ui.snap_slider.setValue(snap)
-        self.ui.snap_label.setText(str(snap))
+        self.ui.snap_slider.setValue(self.active_style['snap'])
+        self.ui.snap_display.setText(str(self.active_style['snap']))
 
     # \\ Rest Conversion
 
+    def update_rest(self, action):
+        log_debug(f"updating rest")
+        self.active_style['rest'] = self.ui.rest_slider.sliderPosition()
+        self.refresh_rest()
 
+    def refresh_rest(self):
+        log_debug(f"refreshing rest")
+        self.ui.rest_slider.setValue(self.active_style['rest'])
+        self.ui.rest_display.setText(str(self.active_style['rest']))
+
+    #
     # Pitch /////
 
     # Anchors

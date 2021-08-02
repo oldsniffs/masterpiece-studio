@@ -75,6 +75,7 @@ class Composer:
 		log_header(f"Filling Music")
 
 		for segment in self.segments:
+			self.current_segment = segment
 			log_sub_header(f"Filling segment consisting of measures: {segment['start']} -- and -- {segment['stop']}")
 			self.increment = segment['style']['increment']
 
@@ -100,7 +101,7 @@ class Composer:
 						2. Sync factor
 						3. Left weight modification -
 						
-						8/1 As of, note proportion maintenance is entirely in design decisions but being implemented yet 
+						8/1 As of, note proportion maintenance is in design, but not being implemented yet 
 						"""
 
 						# Right
@@ -121,6 +122,7 @@ class Composer:
 						# Duration distribution - assignments to ['right_notes']
 						for live_duration in self.right_live_durations:
 							# Establish hierarchy of any beat marks crossed
+							pass
 
 						# Harmony insertion
 
@@ -139,9 +141,14 @@ class Composer:
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
-	def new_duration(self, durations, weights):
-		duration = random.choices(durations, weights)
-		return {'name': duration[0], 'value': duration[1], 'remainder': duration[1], 'annotations': []}
+	# Adjust weights to maintain proportion
+	def proportion_adjust(self, weights):
+		return
+
+	# Return duration index
+	def new_duration(self, weights):
+		duration = random.choices(self.current_segment['style']['durations'], weights) ###### 8-1 pickup Look up duration sheet
+		return
 
 	# increments durations, removes dead ones
 	def increment_count(self):

@@ -78,5 +78,7 @@ STANDARD_STYLE = {
     'ranges_mode': "♯",
     'bounds': BOUNDS_STANDARD,
     'weights': WEIGHTS_STANDARD,
+    'snap': 50,
+    'rest': 10,
     'anchors': ANCHORS_STANDARD,
 }

@@ -949,10 +949,22 @@ QLineEdit:checked:hover {
                     <item>
                      <widget class="QLabel" name="weights_label">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>6</horstretch>
+                       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>100</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>100</width>
+                        <height>16777215</height>
+                       </size>
                       </property>
                       <property name="styleSheet">
                        <string notr="true">QLabel {
@@ -1062,7 +1074,7 @@ QLineEdit:checked:hover {
                             <number>0</number>
                            </property>
                            <property name="maximum">
-                            <number>30</number>
+                            <number>100</number>
                            </property>
                            <property name="pageStep">
                             <number>5</number>
@@ -1077,6 +1089,122 @@ QLineEdit:checked:hover {
                          </item>
                         </layout>
                        </item>
+                       <item>
+                        <widget class="QWidget" name="snap_widget" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                           <horstretch>2</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_47">
+                          <item>
+                           <widget class="QLabel" name="snap_label">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>40</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>40</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>Snap Level</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QVBoxLayout" name="verticalLayout_66">
+                            <item>
+                             <widget class="QLabel" name="snap_display">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>11</pointsize>
+                               </font>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">QLabel {
+	color:rgb(137, 137, 206)
+	
+}</string>
+                              </property>
+                              <property name="text">
+                               <string>1-100</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QSlider" name="snap_slider">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>140</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">QSlider {
+	selection-background-color: rgb(137, 137, 206);
+}</string>
+                              </property>
+                              <property name="minimum">
+                               <number>0</number>
+                              </property>
+                              <property name="maximum">
+                               <number>100</number>
+                              </property>
+                              <property name="pageStep">
+                               <number>5</number>
+                              </property>
+                              <property name="value">
+                               <number>9</number>
+                              </property>
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
                       </layout>
                      </widget>
                     </item>
@@ -1087,7 +1215,7 @@ QLineEdit:checked:hover {
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>800</width>
+                        <width>600</width>
                         <height>20</height>
                        </size>
                       </property>
@@ -1620,7 +1748,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -1708,7 +1836,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -1761,7 +1889,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -1849,7 +1977,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -1901,7 +2029,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -1989,7 +2117,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2041,7 +2169,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2129,7 +2257,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2181,7 +2309,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2269,7 +2397,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2321,7 +2449,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2409,7 +2537,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2461,7 +2589,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2549,7 +2677,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2650,7 +2778,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2744,7 +2872,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2796,7 +2924,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2890,7 +3018,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -2942,7 +3070,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3036,7 +3164,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3088,7 +3216,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3182,7 +3310,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3234,7 +3362,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3328,7 +3456,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3380,7 +3508,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3474,7 +3602,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3526,7 +3654,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -3620,7 +3748,7 @@ QLineEdit:checked:hover {
                                 <number>0</number>
                                </property>
                                <property name="maximum">
-                                <number>30</number>
+                                <number>100</number>
                                </property>
                                <property name="pageStep">
                                 <number>5</number>
@@ -8089,7 +8217,7 @@ QPushButton:focus {
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>data/images/avante-note.png</pixmap>
+          <pixmap>../data/images/avante-note.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
