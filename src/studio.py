@@ -1,7 +1,7 @@
 import sys
 import os
 import pickle
-from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
@@ -85,6 +85,9 @@ class MainWindow(QMainWindow):
         self.ui.timesig_num.textEdited.connect(self.update_timesig_num)
         self.ui.timesig_den.currentIndexChanged.connect(self.update_timesig_den)
         self.ui.bpm_entry.textEdited.connect(self.update_bpm)
+
+        # Beats
+        self.beat_buttons = []
 
         # Assign same signal connections for like widgets
         for name, widget in self.ui.__dict__.items():
@@ -219,6 +222,32 @@ class MainWindow(QMainWindow):
     def refresh_timesig_den(self):
         log_debug(f"refresh timesig_den")
         self.ui.timesig_den.setCurrentText(str(self.active_style['timesig_den']))
+
+    def update_beats(self):
+        log_debug(f"updating beats")
+        # remove or add buttons
+        button_count = len(self.beat_buttons)
+        balance = self.active_style['timesig_num'] - button_count
+        if balance:
+            # add
+            for b in range(balance):
+                self.beat_buttons.pop()
+
+        else:
+            # remove
+
+    def _remove_beat_button(self, number):
+
+    def _add_beat_button(self, number):
+        button = QPushButton(parent=self.ui.beats_widget)
+        # text
+        button.setText(number)
+        # connect
+        button.clicked.connect(self.toggle_beat_dominance)
+
+        self.beat_buttons.append(button)
+
+    def update_beat_dominance(self, ):
 
     # Bpm
     def update_bpm(self, text):

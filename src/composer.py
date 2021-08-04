@@ -115,6 +115,8 @@ class Composer:
 
 							# check for distance to beat markers
 							# - snap role  snap slider,  note needs
+							if random.randint(1, 100) >= segment['style']['snap']:
+								self.snap(weights)
 
 							prime = self.new_duration(durations, weights) # Here, weights could be modified for "snap-fitting" preferences
 							measure['right_durations'].append(prime)
@@ -141,19 +143,21 @@ class Composer:
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
+	def snap(self, weights):
+		pass
+
 	# Adjust weights to maintain proportion
 	def proportion_adjust(self, weights):
 		return
 
 	# Return duration index
 	def new_duration(self, weights):
-		duration = random.choices(self.current_segment['style']['durations'], weights) ###### 8-1 pickup Look up duration sheet
-		return
+		return random.choices(self.current_segment['style']['durations'], weights) ###### 8-1 pickup Look up duration sheet
 
 	# increments durations, removes dead ones
 	def increment_count(self):
 		self.count += self.increment
-		for live_duration in  + self.left_live_durations + self.right_live_durations:
+		for live_duration in + self.left_live_durations + self.right_live_durations:
 			live_duration['life'] -= self.increment
 			if not live_duration['life']:
 				del[live_duration]

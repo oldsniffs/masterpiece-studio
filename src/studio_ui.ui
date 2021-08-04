@@ -828,6 +828,23 @@ QLineEdit:checked:hover {
                       </widget>
                      </item>
                      <item>
+                      <widget class="QWidget" name="beats_widget" native="true">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_38"/>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QWidget" name="bpm_bar" native="true">
                        <layout class="QHBoxLayout" name="horizontalLayout_31">
                         <item>
