@@ -1,7 +1,7 @@
 import sys
 import os
 import pickle
-from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
@@ -210,6 +210,7 @@ class MainWindow(QMainWindow):
         log_debug(f"updating timesig_num")
         if self.ui.timesig_num.text() != "":
             self.active_style['timesig_num'] = int(self.ui.timesig_num.text())
+        self.update_beats()
 
     def refresh_timesig_num(self):
         log_debug(f"refreshing timesig_num")
@@ -223,31 +224,60 @@ class MainWindow(QMainWindow):
         log_debug(f"refresh timesig_den")
         self.ui.timesig_den.setCurrentText(str(self.active_style['timesig_den']))
 
+    # could have buttons premade standing by, or create and delete each timesig_num change
     def update_beats(self):
         log_debug(f"updating beats")
         # remove or add buttons
         button_count = len(self.beat_buttons)
         balance = self.active_style['timesig_num'] - button_count
-        if balance:
-            # add
+        if balance > 0:
+            log_info(f"{balance} beat buttons must be added")
             for b in range(balance):
+                button = QPushButton(self.ui.beats_widget)
+                button.setText(str(button_count+b+1))
+                # It seems I will have to calculate the geometry for each button configuration, as qt is placing them all at 0,0 inside the parent by default
+                button.setVisible(True)
+                button.setMaximumWidth(100)
+                self.beat_buttons.append(button)
+
+        elif balance < 0:
+            log_info(f"{balance*-1} beat buttons must be removed")
+            for b in range(balance*-1):
+                self.beat_buttons[-1].setParent(None)
                 self.beat_buttons.pop()
 
-        else:
-            # remove
+        log_debug(self.beat_buttons)
+
+        self.refresh_beats()
+
+    def refresh_beats(self):
+        total_width = self.ui.beats_widget.width()
+        button_count = len(self.beat_buttons)
+        button_width = int(total_width / button_count)-10
+        for b in range(button_count):
+            self.beat_buttons[b].setGeometry((button_width+4)*b, 0, button_width, 40)
+        self.refresh_emphasis()
+
+    def refresh_emphasis(self):
+        # emphasis color: color: rgb(161, 239, 119)
+
+        pass
 
     def _remove_beat_button(self, number):
+        pass
 
     def _add_beat_button(self, number):
         button = QPushButton(parent=self.ui.beats_widget)
         # text
         button.setText(number)
         # connect
-        button.clicked.connect(self.toggle_beat_dominance)
+        button.clicked.connect(self.update_beat_division)
 
         self.beat_buttons.append(button)
 
-    def update_beat_dominance(self, ):
+    def update_beat_divisons(self):
+        beat = self.sender().text()
+
 
     # Bpm
     def update_bpm(self, text):
@@ -540,10 +570,10 @@ class Configuration:
     # Adds song data at compose time with finalized user input
     def finalize_song_parameters(self):
         for segment in self.segments:
-            segment['style'].update(duration_sheet(segment['style']['timesig_den']))
-            segment['style']['increment'] = self.get_increment(segment['style']['prime_durations'])
+            segment['style']['duration_sheet'], segment['style']['note_sheet'] = get_sheets(segment['style']['timesig_den'])
+            segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet'])
 
-            segment['style']['prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
+            segment['style']['right_prime_weights'], segment['style']['left_prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
 
             # Set up ready-to-use measures list
             segment['measures'] = [{
@@ -560,7 +590,7 @@ class Configuration:
         pass
 
     def get_increment(self, prime_durations):
-        return prime_durations[-1][1]  # as per design doc, just using sixtyfourth for now
+        return prime_durations[-1]
 
     #
     # As per design doc, if notesheet is implemented, this will change
@@ -581,7 +611,7 @@ class Configuration:
 
         length_weights = []
 
-        return prime_weights, pair_weights, length_weights
+        return prime_weights, prime_weights, pair_weights, length_weights
 
 
 if __name__ == "__main__":

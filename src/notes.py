@@ -16,6 +16,7 @@ SHARP_OCTAVE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A
 FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"]
 
 
+
 # Durations
 # [(name, beats per note in */4 time)]
 CORE_NOTES = [
@@ -48,8 +49,11 @@ DOUBLE_DOTTED_NOTES = [
 	("ddsixtyfourth", .109375),
 ]
 
-PRIME_NOTES = CORE_NOTES+DOTTED_NOTES
-ALL_NOTES = PRIME_NOTES + DOUBLE_DOTTED_NOTES
+PRIME_DURATIONS = CORE_NOTES + DOTTED_NOTES
+ALL_NOTES = PRIME_DURATIONS + DOUBLE_DOTTED_NOTES
+
+# Note indices
+PRIME_DURATIONS_INDEX = [i for i in range(len(PRIME_DURATIONS))]
 
 
 def beat_value(note_beats, timesig_den):
@@ -60,21 +64,20 @@ def convert_durations(durations, timesig_den):
 	return [(d[0], beat_value(d[1], timesig_den)) for d in durations]
 
 
-# gives prime_durations, dd durations, and all durations, given time signature
-# this dict is passed into segment['style'].update()
-def duration_sheet(timesig_den):
+# Gives data objects for durations and notes
+def get_sheets(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
-	prime_durations = convert_durations(PRIME_NOTES, timesig_den)
-	dd_durations = convert_durations(DOUBLE_DOTTED_NOTES, timesig_den)
-	return {'prime_durations': prime_durations, 'dd_durations': dd_durations, 'all_durations': prime_durations + dd_durations}
 
+	# return lists of tuples for prime durations
+	duration_sheet = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
 
-# Segment-specific list of note dictionaries
-# note: {"type": string, "duration": float, "prime": int, "pair": int, length: [length weight list]}
-# length weight list: [list of int values of weights for pair lengths starting at 2]
-def notesheet():
-	return {}.update()
+	# same list converted to dicts for notes
+	note_sheet =  [{'type': note[0], 'value':beat_value(note[1], timesig_den)} for note in ALL_NOTES]
+
+	return duration_sheet, note_sheet
 
 
 if __name__ == "__main__":
-	print(duration_sheet(2))
+	duration_sheet, note_sheet = get_sheets(4)
+	print(duration_sheet)
+	print(note_sheet)
