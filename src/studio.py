@@ -88,6 +88,7 @@ class MainWindow(QMainWindow):
 
         # Beats
         self.beat_buttons = []
+        self.ui.beats_widget.resizeEvent(self.refresh_beats())
 
         # Assign same signal connections for like widgets
         for name, widget in self.ui.__dict__.items():
@@ -124,6 +125,11 @@ class MainWindow(QMainWindow):
         self.ui.left_upper_slider.actionTriggered.connect(self.update_left_upper_bound)
         self.ui.right_lower_slider.actionTriggered.connect(self.update_right_lower_bound)
         self.ui.right_upper_slider.actionTriggered.connect(self.update_right_upper_bound)
+
+    # Override UI virtual functions
+
+    def resizeEvent(self, event):
+        self.refresh_beats()
 
     # Navigation //////////////////////////////////////////////////////////////////////////////////// Navigation
 
@@ -210,7 +216,7 @@ class MainWindow(QMainWindow):
         log_debug(f"updating timesig_num")
         if self.ui.timesig_num.text() != "":
             self.active_style['timesig_num'] = int(self.ui.timesig_num.text())
-        self.update_beats()
+        self.refresh_beats()
 
     def refresh_timesig_num(self):
         log_debug(f"refreshing timesig_num")
@@ -225,42 +231,60 @@ class MainWindow(QMainWindow):
         self.ui.timesig_den.setCurrentText(str(self.active_style['timesig_den']))
 
     # could have buttons premade standing by, or create and delete each timesig_num change
-    def update_beats(self):
-        log_debug(f"updating beats")
+    def refresh_beats(self):
+        log_debug(f"refreshing beats")
         # remove or add buttons
+        beat_count = self.active_style['timesig_num']
+
         button_count = len(self.beat_buttons)
         balance = self.active_style['timesig_num'] - button_count
-        if balance > 0:
-            log_info(f"{balance} beat buttons must be added")
-            for b in range(balance):
-                button = QPushButton(self.ui.beats_widget)
-                button.setText(str(button_count+b+1))
-                # It seems I will have to calculate the geometry for each button configuration, as qt is placing them all at 0,0 inside the parent by default
-                button.setVisible(True)
-                button.setMaximumWidth(100)
-                self.beat_buttons.append(button)
+        if balance != 0:
+            if balance > 0:
+                log_info(f"{balance} beat buttons must be added")
+                for b in range(balance):
+                    button = QPushButton(self.ui.beats_widget)
+                    button.setText(str(button_count+b+1))
+                    # It seems I will have to calculate the geometry for each button configuration, as qt is placing them all at 0,0 inside the parent by default
+                    button.setVisible(True)
+                    button.setMaximumWidth(100)
+                    button.setCheckable(True) # Could do a programmed tri-state button for hierarchy
+                    button.clicked.connect(self.update_beat_division)
+                    self.beat_buttons.append(button)
 
-        elif balance < 0:
-            log_info(f"{balance*-1} beat buttons must be removed")
-            for b in range(balance*-1):
-                self.beat_buttons[-1].setParent(None)
-                self.beat_buttons.pop()
+            elif balance < 0:
+                log_info(f"{balance*-1} beat buttons must be removed")
+                for b in range(balance*-1):
+                    self.beat_buttons[-1].setParent(None)
+                    self.beat_buttons.pop()
+
+            # For duple time
+
 
         log_debug(self.beat_buttons)
 
-        self.refresh_beats()
-
-    def refresh_beats(self):
         total_width = self.ui.beats_widget.width()
         button_count = len(self.beat_buttons)
         button_width = int(total_width / button_count)-10
         for b in range(button_count):
             self.beat_buttons[b].setGeometry((button_width+4)*b, 0, button_width, 40)
-        self.refresh_emphasis()
+        self.refresh_beat_division()
 
-    def refresh_emphasis(self):
-        # emphasis color: color: rgb(161, 239, 119)
+    # A beat button has been toggled
+    def update_beat_division(self, isChecked):
+        log_info(f"updating beat_division")
+        beat = int(self.sender().text())
+        log_debug(f'beat {beat} is {isChecked}')
+        if isChecked:
+            self.active_style['beat_division'].append(beat)
+        else:
+            self.active_style['beat_division'].remove(beat)
 
+    def refresh_division_display(self):
+
+
+    def refresh_beat_widget(self):
+        # beat_division color: color: rgb(161, 239, 119)
+        for
         pass
 
     def _remove_beat_button(self, number):

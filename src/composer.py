@@ -112,6 +112,7 @@ class Composer:
 							# Adjust weights -- [f'{self.hand}_prime_weights']
 							# "snapping" -- Use snap slider + distance to beat markers + note proportion needs
 
+
 							prime = self.new_duration()
 
 						for live_duration in self.right_live_durations:

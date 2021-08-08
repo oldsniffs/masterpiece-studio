@@ -904,7 +904,7 @@ QLineEdit:checked:hover {
                       </widget>
                      </item>
                      <item>
-                      <widget class="QWidget" name="emphasis_widget" native="true">
+                      <widget class="QWidget" name="beats_division_widget" native="true">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -919,10 +919,10 @@ QLineEdit:checked:hover {
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_40">
                         <item>
-                         <widget class="QWidget" name="emphasis_layout_1" native="true">
+                         <widget class="QWidget" name="division_bar" native="true">
                           <layout class="QHBoxLayout" name="horizontalLayout_39">
                            <item>
-                            <widget class="QLabel" name="emphasis_label">
+                            <widget class="QLabel" name="division_label">
                              <property name="maximumSize">
                               <size>
                                <width>80</width>
@@ -930,7 +930,7 @@ QLineEdit:checked:hover {
                               </size>
                              </property>
                              <property name="text">
-                              <string>Emphasis:</string>
+                              <string>Beat Divisions:</string>
                              </property>
                              <property name="alignment">
                               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -938,12 +938,12 @@ QLineEdit:checked:hover {
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLabel" name="emphasis_display">
+                            <widget class="QLabel" name="division_display">
                              <property name="styleSheet">
                               <string notr="true"/>
                              </property>
                              <property name="text">
-                              <string>///notes///</string>
+                              <string>///beats///</string>
                              </property>
                             </widget>
                            </item>
@@ -980,6 +980,108 @@ QLineEdit:checked:hover {
                            <property name="bottomMargin">
                             <number>2</number>
                            </property>
+                          </layout>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item alignment="Qt::AlignTop">
+                      <widget class="QWidget" name="widget_18" native="true">
+                       <layout class="QVBoxLayout" name="verticalLayout_59">
+                        <property name="spacing">
+                         <number>2</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>2</number>
+                        </property>
+                        <item>
+                         <widget class="QWidget" name="meter_str_widget" native="true">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <layout class="QHBoxLayout" name="horizontalLayout_40">
+                           <property name="spacing">
+                            <number>2</number>
+                           </property>
+                           <property name="leftMargin">
+                            <number>2</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>2</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>2</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>2</number>
+                           </property>
+                           <item>
+                            <widget class="QLabel" name="meter_str_label">
+                             <property name="text">
+                              <string>Meter Strength:</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QWidget" name="meter_str_slider_layout" native="true">
+                             <layout class="QVBoxLayout" name="verticalLayout_61">
+                              <property name="spacing">
+                               <number>4</number>
+                              </property>
+                              <property name="leftMargin">
+                               <number>4</number>
+                              </property>
+                              <property name="topMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="rightMargin">
+                               <number>2</number>
+                              </property>
+                              <property name="bottomMargin">
+                               <number>2</number>
+                              </property>
+                              <item>
+                               <widget class="QLabel" name="meter_str_display">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="text">
+                                 <string>1-100</string>
+                                </property>
+                                <property name="alignment">
+                                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QSlider" name="meter_str_slider">
+                                <property name="orientation">
+                                 <enum>Qt::Horizontal</enum>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </widget>
+                           </item>
                           </layout>
                          </widget>
                         </item>
@@ -1165,6 +1267,21 @@ QLineEdit:checked:hover {
                           </sizepolicy>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_47">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="snap_label">
                             <property name="sizePolicy">

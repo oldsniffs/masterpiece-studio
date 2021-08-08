@@ -80,6 +80,6 @@ STANDARD_STYLE = {
     'weights': WEIGHTS_STANDARD,
     'snap': 50,
     'rest': 10,
-    'beat_divisions': 3,
+    'beat_division': [2],
     'anchors': ANCHORS_STANDARD,
 }
