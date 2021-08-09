@@ -80,6 +80,11 @@ STANDARD_STYLE = {
     'weights': WEIGHTS_STANDARD,
     'snap': 50,
     'rest': 10,
-    'beat_division': [2],
+    'division_beats': [2],
+    # number of division_beats      ---> duple, triple quadruple
+    # how beats are divided         ---> simple = by 2, complex
+    'meter': [2], # list of meters matching division_beats -- 2 means simple, 3 means triple
+    'meter_unit': [], # index of meter unit. determined by meter and time den (regular beat divided by meter)
+    'meter_strength': 70,
     'anchors': ANCHORS_STANDARD,
 }

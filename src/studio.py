@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
                     button.setVisible(True)
                     button.setMaximumWidth(100)
                     button.setCheckable(True) # Could do a programmed tri-state button for hierarchy
-                    button.clicked.connect(self.update_beat_division)
+                    button.clicked.connect(self.update_division_beats)
                     self.beat_buttons.append(button)
 
             elif balance < 0:
@@ -267,24 +267,23 @@ class MainWindow(QMainWindow):
         button_width = int(total_width / button_count)-10
         for b in range(button_count):
             self.beat_buttons[b].setGeometry((button_width+4)*b, 0, button_width, 40)
-        self.refresh_beat_division()
+        self.refresh_division_beats()
 
     # A beat button has been toggled
-    def update_beat_division(self, isChecked):
-        log_info(f"updating beat_division")
+    def update_division_beats(self, isChecked):
+        log_info(f"updating division_beats")
         beat = int(self.sender().text())
         log_debug(f'beat {beat} is {isChecked}')
         if isChecked:
-            self.active_style['beat_division'].append(beat)
+            self.active_style['division_beats'].append(beat)
         else:
-            self.active_style['beat_division'].remove(beat)
+            self.active_style['division_beats'].remove(beat)
 
     def refresh_division_display(self):
-
+        pass
 
     def refresh_beat_widget(self):
-        # beat_division color: color: rgb(161, 239, 119)
-        for
+        # division_beats color: color: rgb(161, 239, 119)
         pass
 
     def _remove_beat_button(self, number):
@@ -295,7 +294,7 @@ class MainWindow(QMainWindow):
         # text
         button.setText(number)
         # connect
-        button.clicked.connect(self.update_beat_division)
+        button.clicked.connect(self.update_division_beats)
 
         self.beat_buttons.append(button)
 

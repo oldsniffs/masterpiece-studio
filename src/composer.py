@@ -80,6 +80,7 @@ class Composer:
 
 			for measure in segment['measures']:
 				self.current_measure = measure
+				self.current_style = measure['style']
 				log_info(f"Filling Measure: {measure['number']}")
 
 				for beat in range(measure['style']['timesig_num']):
@@ -110,10 +111,15 @@ class Composer:
 						# New Prime
 						if not self.right_live_durations:
 							# Adjust weights -- [f'{self.hand}_prime_weights']
-							# "snapping" -- Use snap slider + distance to beat markers + note proportion needs
+							weights = self.current_style['right_prime_weights']
 
+							self._weight_meter_strength(weights)
+							# meter_strength adjustment (replaces old "snapping")
 
 							prime = self.new_duration()
+
+							# properly distribute duration
+							self.distribute_duration(prime)
 
 						for live_duration in self.right_live_durations:
 							# Establish hierarchy of any beat marks crossed
@@ -133,10 +139,15 @@ class Composer:
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
-	# chops up duration into notes
-	# put notes in right_music and left_music
-	def distribute_duration(self, duration):
-		pass
+	def _weigh_meter_strength(self, weights):
+		if random.randint(1,100) < self.current_style['meter_strength']:
+
+			# get snapping durations - list of snapping values
+			# cycle all duration weights, shift their weight to nearest snapping value
+
+			# change indices of unwanted durations to 0
+
+			pass
 
 	def snap(self, weights):
 		pass
@@ -153,6 +164,33 @@ class Composer:
 		self.__dict__[f'{self.hand}_live_durations'].append([prime, prime])  # ref to duration, life
 
 		self.distribute_duration(prime)
+
+	# chops up duration into notes
+	# put notes in right_music and left_music
+	def distribute_duration(self, duration):
+		# break on division_beats
+		# iterate through succeeding division beats in durations life
+		tracker = self.count
+		terminus = self.count + duration
+		for db in self.current_style['division_beats']:
+			if tracker < db < terminus:
+				pass
+			# fill to next db
+			# denominate in meter's basic unit
+
+
+		# while tracker != terminus:
+		# 		for db in self.current_style['division_beats']:
+		# 			if db > tracker
+
+			# what when we hit one?
+			# check for meter denom
+			# append notes to self.current_measure[f'{self.hand}_notes']
+
+
+
+			# complete "overflow" duration after last division beat
+		pass
 
 	# increments durations, removes dead ones
 	def increment_count(self):
