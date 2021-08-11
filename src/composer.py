@@ -63,7 +63,7 @@ class Composer:
 		self.left_live_durations = []
 		self.current_measure = self.segments[0]['measures'][0]
 		self.increment = self.current_measure['style']['increment']
-		self.count = 0
+		self.count = 0 # count in measure
 		self.hand = None
 		self.note_tally = [0 for i in range(len(ALL_NOTES))]
 
@@ -166,30 +166,61 @@ class Composer:
 		self.distribute_duration(prime)
 
 	# chops up duration into notes
-	# put notes in right_music and left_music
+	# put notes in right_music or left_music
 	def distribute_duration(self, duration):
+		log_info(f"Distributing duration {duration} at from count {self.count}")
 		# break on division_beats
 		# iterate through succeeding division beats in durations life
+		remaining_duration = duration
+		notes = [] # (count, note)
 		tracker = self.count
+		beat = int(self.count)
 		terminus = self.count + duration
-		for db in self.current_style['division_beats']:
-			if tracker < db < terminus:
-				pass
-			# fill to next db
-			# denominate in meter's basic unit
+		last_beat = int(terminus)
+
+		# get remaining beat markers
+		# iterate remaining beat markers
+		for b in range(beat, self.current_style['timesig_num']):
+			if self.count != b: # Start OFF beat
+				log_info(f"at count {self.count}, we are starting OFF a beat")
+
+				while tracker < b:
+					pass
+
+				# Following could be method
+				# get distance to next beat
+				distance = beat+1 - self.count
+
+				# get distance fit or biggest from all durations
+
+				for d in reversed(self.current_style['duration_sheet']):  # this search could probably be more efficient
+					if d < distance:
+						notes.append
+					if self.tracker == beat+1:
+						break
+
+				# get complement
 
 
-		# while tracker != terminus:
-		# 		for db in self.current_style['division_beats']:
-		# 			if db > tracker
-
-			# what when we hit one?
-			# check for meter denom
-			# append notes to self.current_measure[f'{self.hand}_notes']
 
 
 
-			# complete "overflow" duration after last division beat
+			# if strong, go as far as possible
+			else: # Start ON beat
+				log_info(f"at count {self.count}, we are starting ON a beat")
+
+			# denominate with meter unit
+
+			if tracker == terminus:
+				break
+
+			# send flow_over to next measure (
+		pass
+
+	def _assign_notes(self, notes):
+		pass
+
+	def duration_by_distance(self, ):
 		pass
 
 	# increments durations, removes dead ones

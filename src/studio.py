@@ -243,7 +243,7 @@ class MainWindow(QMainWindow):
                 log_info(f"{balance} beat buttons must be added")
                 for b in range(balance):
                     button = QPushButton(self.ui.beats_widget)
-                    button.setText(str(button_count+b+1))
+                    button.setText(f"{str(button_count+b+1)}\n")
                     # It seems I will have to calculate the geometry for each button configuration, as qt is placing them all at 0,0 inside the parent by default
                     button.setVisible(True)
                     button.setMaximumWidth(100)

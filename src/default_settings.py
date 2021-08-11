@@ -81,8 +81,9 @@ STANDARD_STYLE = {
     'snap': 50,
     'rest': 10,
     'division_beats': [2],
-    # number of division_beats      ---> duple, triple quadruple
-    # how beats are divided         ---> simple = by 2, complex
+    # odd meter uses simple and compound beats. division_beats may need second variable for s/c
+    # number of division_beats      ---> duple, triple quadruple, odd (5/8, 7/8)
+    # how beats are divided         ---> simple = divisible by 2, compound
     'meter': [2], # list of meters matching division_beats -- 2 means simple, 3 means triple
     'meter_unit': [], # index of meter unit. determined by meter and time den (regular beat divided by meter)
     'meter_strength': 70,

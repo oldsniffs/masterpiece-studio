@@ -1,19 +1,11 @@
 from custom_logging import *
 
 """
-Purpose: Generate "durations" for Rhythm class
+Static variables for notes
 
-The function "duration_sheet" takes a timesig returns a skeleton dictionary of note dictionaries. It is called by the Rhythm class
-in rhythm.py
-
-TODO: give increment an algorithm
-
+The function "get_sheets" takes a timesig_den and returns ordered lists of duration values and note dictionaries
 """
-SHARP_LYNOTES = ['a,,,', 'ais,,,', 'b,,,', 'c,,', 'cis,,', 'd,,', 'dis,,', 'e,,', 'f,,', 'fis,,', 'g,,', 'gis,,', 'a,,', 'ais,,', 'b,,', 'c,', 'cis,', 'd,', 'dis,', 'e,', 'f,', 'fis,', 'g,', 'gis,', 'a,', 'ais,', 'b,', 'c', 'cis', 'd', 'dis', 'e', 'f', 'fis', 'g', 'gis', 'a', 'ais', 'b', "c'", "cis'", "d'", "dis'", "e'", "f'", "fis'", "g'", "gis'", "a'", "ais'", "b'", "c''", "cis''", "d''", "dis''", "e''", "f''", "fis''", "g''", "gis''", "a''", "ais'''", "b''", "c'''", "cis'''", "d'''", "dis'''", "e'''", "f'''", "fis'''", "g'''", "gis'''", "a'''", "ais'''", "b'''", "c''''", "cis''''", "d''''", "dis''''", "e''''", "f''''", "fis''''", "g''''", "gis''''", "a''''", "ais''''", "b''''", "c'''''"]
-FLAT_LYNOTES = ['a,,,', 'bes,,,', 'b,,,', 'c,,', 'des,,', 'd,,', 'ees,,', 'e,,', 'f,,', 'ges,,', 'g,,', 'aes,,', 'a,,', 'bes,,', 'b,,', 'c,', 'des,', 'd,', 'ees,', 'e,', 'f,', 'ges,', 'g,', 'aes,', 'a,', 'bes,', 'b,', 'c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g', 'aes', 'a', 'bes', 'b', "c'", "des'", "d'", "ees'", "e'", "f'", "ges'", "g'", "aes'", "a'", "bes'", "b'", "c''", "des''", "d''", "ees''", "e''", "f''", "ges''", "g''", "aes''", "a''", "bes''", "b''", "c'''", "des'''", "d'''", "ees'''", "e'''", "f'''", "ges'''", "g'''", "aes'''", "a'''", "bes'''", "b'''", "c''''", "des''''", "d''''", "ees''''", "e''''", "f''''", "ges''''", "g''''", "aes''''", "a''''", "bes''''", "b''''", "c'''''"]
 
-SHARP_OCTAVE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
-FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"]
 
 
 
@@ -64,14 +56,14 @@ def convert_durations(durations, timesig_den):
 	return [(d[0], beat_value(d[1], timesig_den)) for d in durations]
 
 
-# Gives data objects for durations and notes
+# Returns data objects for durations and notes
 def get_sheets(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
 
-	# return lists of tuples for prime durations
+	# ordered list of prime duration values for durations
 	duration_sheet = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
 
-	# same list converted to dicts for notes
+	# mirror ordered list of dicts for notes
 	note_sheet =  [{'type': note[0], 'value':beat_value(note[1], timesig_den)} for note in ALL_NOTES]
 
 	return duration_sheet, note_sheet
