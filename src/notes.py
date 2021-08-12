@@ -62,12 +62,11 @@ def get_sheets(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
 
 	# ordered list of prime duration values for durations
-	duration_sheet_ascending = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
-	duration_sheet_descending = reversed(duration_sheet_ascending)
+	duration_sheet = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
 
 	# mirror ordered list of dicts for notes
 	note_sheet = [{'masterpiece_index': n, 'name': ALL_NOTES[n][0], 'beat_value':beat_value(ALL_NOTES[n][1], timesig_den)} for n in range(len(ALL_NOTES))]
-	note_sheet_descending
+	note_sheet_descending = 
 
 	return duration_sheet_ascending, duration_sheet_descending, note_sheet
 
