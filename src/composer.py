@@ -10,7 +10,8 @@ Composer class
 
 Generates music from user input:
 
-Composer.segments[...]['music'] holds underlying musical information studio can convert to output formats
+Composer class generates a random piece of music from a user determined configuration
+The music attribute is the main item of interest. It holds lists representing complete notational information for each hand
 
 use-ready segments have a "kites" list
 this is a system of injecting special musical events "randomly"
@@ -40,10 +41,11 @@ notes are drawn from ['style']['note_sheet']
 durations are: (value, weight)
 
 notes are: {type: "note type", 
-			duration: beats,
-			starting beat in measure: beat,
-			scientific pitch notation: "",
-			extra engraving info: []}
+			duration: duration,
+			starting beat in measure: <- self.count, *
+			scientific pitch notation: "" <-,
+			extra engraving info: [] <-}
+* "<-" means it gets added in by the Composer class
 
 fill_music generates music, filling in each measure's ['music'] list
 self.full_music() returns full music lists for right and left hands
@@ -62,6 +64,7 @@ class Composer:
 		self.right_live_durations = []
 		self.left_live_durations = []
 		self.current_measure = self.segments[0]['measures'][0]
+		self.next_measure = self.segments[0]['measures'][1]
 		self.increment = self.current_measure['style']['increment']
 		self.count = 0 # count in measure
 		self.hand = None
@@ -78,16 +81,23 @@ class Composer:
 			log_sub_header(f"Filling segment consisting of measures: {segment['start']} -- and -- {segment['stop']}")
 			self.increment = segment['style']['increment']
 
-			for measure in segment['measures']:
-				self.current_measure = measure
-				self.current_style = measure['style']
-				log_info(f"Filling Measure: {measure['number']}")
+			for m in len(range(segment['measures'])):
+				self.current_measure = segment['measures'][m]
+				self.next_measure = segment['measure'][m+1]
+				self.current_style = self.current_measure['style']
+				log_info(f"Filling Measure: {m+1}")
+				# Load overflow into live_durations
+				for duration in self.current_measure['left_durations']:
+					self.left_live_durations.append(duration)
+				for duration in self.current_measure['right_durations']:
+					self.right_live_durations.append(duration)
 
-				for beat in range(measure['style']['timesig_num']):
+				for beat in range(self.current_measure['style']['timesig_num']):
 					log_debug(f"== Beat {beat} ==")
 					for inc in range(int(1/self.increment)):  # number of increments per beat
 
-						if measure['kites']:  # Place to process kites
+						if self.current_measure['kites']:  # Place to process kites
+							# load planned duration into live
 							pass
 
 						"""Must fulfill:
@@ -130,7 +140,7 @@ class Composer:
 						if not self.left_live_durations:
 							# Skew weights for left if "dragged"   ---- 8/4 move to finalize song params
 							prime_duration = self.new_duration()
-							measure['left_durations'].append(prime_duration)
+							self.current_measure['left_durations'].append(prime_duration)
 							self.left_live_durations.append(prime_duration)
 
 						self.increment_count()
@@ -171,48 +181,65 @@ class Composer:
 		log_info(f"Distributing duration {duration} at from count {self.count}")
 		# break on division_beats
 		# iterate through succeeding division beats in durations life
-		remaining_duration = duration
+		remainder = duration
 		notes = [] # (count, note)
 		tracker = self.count
-		beat = int(self.count)
+		division = int(self.count)
 		terminus = self.count + duration
-		last_beat = int(terminus)
+		if terminus > self.current_style['timesig_num']:
+			terminus = self.current_style['timesig_num']
+		final_division = int(terminus)
 
-		# get remaining beat markers
-		# iterate remaining beat markers
-		for b in range(beat, self.current_style['timesig_num']):
-			if self.count != b: # Start OFF beat
-				log_info(f"at count {self.count}, we are starting OFF a beat")
+		# if start is off division start and reaches a division -- ascending order to endpoint
+		if self.count != division and terminus >= division+1:
+			distance = division+1 - self.count
+			fill_notes = self.fill_gap(distance)
+			for fn in reversed(fill_notes):
+				self.current_measure[f"{self.hand}_music"].append(fn)
+			tracker += distance
+			remainder -= distance
+
+		# Previous if statement guarantees that if still distributing, tracker is now on a division
+		while distance:= terminus - tracker > 0:
+			# measure
+
+
+			# process to end of measure, send remainder to next measure
+			print(distance)
+			# does it end before next division?
+			if remainder < 1:
+				distance = remainder
+			# how many more divisions it crosses?
+			remaining_divs = int(remainder)
+			# does it cross a measure?
+			if tracker + remaining_divs > self.current_style['timesig_num']:
+				pass
+
+			# cut
+
+			for note in self.fill_gap(distance):
+				self.current_measure[f"{self.hand}_music"].append(n)
+			return
+
+		# end of measure reached with remainder
+		if remainder:
+			self.next_measure[f"{self.hand}_durations"].append(remainder)
+
+
+		# get remaining division markers
+		# iterate remaining division markers
+		for b in range(division, self.current_style['timesig_num']):
+			if self.count != b: # Start OFF division
+				log_info(f"at count {self.count}, we are starting OFF a division")
 
 				while tracker < b:
 					pass
 
-				# Following could be method
-				# get distance to next beat
-				distance = beat+1 - self.count
-
-				# get distance fit or biggest from all durations
-
-				for d in reversed(self.current_style['duration_sheet']):  # this search could probably be more efficient
-					if d < distance:
-						notes.append
-					if self.tracker == beat+1:
-						break
-
-				# get complement
-
-
-
-
-
 			# if strong, go as far as possible
-			else: # Start ON beat
-				log_info(f"at count {self.count}, we are starting ON a beat")
+			else: # Start ON division
+				log_info(f"at count {self.count}, we are starting ON a division")
 
 			# denominate with meter unit
-
-			if tracker == terminus:
-				break
 
 			# send flow_over to next measure (
 		pass
@@ -220,8 +247,17 @@ class Composer:
 	def _assign_notes(self, notes):
 		pass
 
-	def duration_by_distance(self, ):
-		pass
+	# Returns untied list of notes in ascending order that fills an amount of beats
+	# needs to get notes by checking their beat values
+	def fill_gap(self, gap):
+		notes = []
+		while gap:
+			for note in self.current_style['note_sheet']:
+				if note['beat_value'] <= gap:
+					notes.append(note)
+					gap -= note['beat_value']
+		return notes
+
 
 	# increments durations, removes dead ones
 	def increment_count(self):
@@ -233,6 +269,7 @@ class Composer:
 
 	# Generation Utility ========================
 
+	# Probably Dep
 	def check_beat_strength(self, duration, count):
 		log_debug(f"Checking if a duration {duration} on count {count} is strong")
 		if (count/duration[1]) % 2 == 0:

@@ -9,7 +9,7 @@ The function "get_sheets" takes a timesig_den and returns ordered lists of durat
 
 
 
-# Durations
+# Note Data
 # [(name, beats per note in */4 time)]
 CORE_NOTES = [
 	("whole", 4),
@@ -41,6 +41,7 @@ DOUBLE_DOTTED_NOTES = [
 	("ddsixtyfourth", .109375),
 ]
 
+# Durations lists can expand, but beginning would still mirror note indices
 PRIME_DURATIONS = CORE_NOTES + DOTTED_NOTES
 ALL_NOTES = PRIME_DURATIONS + DOUBLE_DOTTED_NOTES
 
@@ -61,15 +62,17 @@ def get_sheets(timesig_den):
 	log_info(f'Building duration_sheet for */{timesig_den} time')
 
 	# ordered list of prime duration values for durations
-	duration_sheet = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
+	duration_sheet_ascending = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
+	duration_sheet_descending = reversed(duration_sheet_ascending)
 
 	# mirror ordered list of dicts for notes
-	note_sheet =  [{'type': note[0], 'value':beat_value(note[1], timesig_den)} for note in ALL_NOTES]
+	note_sheet = [{'masterpiece_index': n, 'name': ALL_NOTES[n][0], 'beat_value':beat_value(ALL_NOTES[n][1], timesig_den)} for n in range(len(ALL_NOTES))]
+	note_sheet_descending
 
-	return duration_sheet, note_sheet
+	return duration_sheet_ascending, duration_sheet_descending, note_sheet
 
 
 if __name__ == "__main__":
-	duration_sheet, note_sheet = get_sheets(4)
-	print(duration_sheet)
+	duration_sheet_ascending, duration_sheet_descending, note_sheet = get_sheets(4)
+	print(duration_sheet_ascending)
 	print(note_sheet)

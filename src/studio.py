@@ -267,7 +267,7 @@ class MainWindow(QMainWindow):
         button_width = int(total_width / button_count)-10
         for b in range(button_count):
             self.beat_buttons[b].setGeometry((button_width+4)*b, 0, button_width, 40)
-        self.refresh_division_beats()
+        # self.refresh_division_beats()
 
     # A beat button has been toggled
     def update_division_beats(self, isChecked):
@@ -508,9 +508,9 @@ class MainWindow(QMainWindow):
 
     def index_to_ly(self, index, mode):
         if mode == "♯":
-            return SHARP_LYNOTES[index]
+            return SHARP_LYPITCHES[index]
         else:
-            return FLAT_LYNOTES[index]
+            return FLAT_PITCHES[index]
 
     # Unsure /////////////////////////////////////////////////////////////////////////////////////// Unsure
 
@@ -548,9 +548,9 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_song_parameters()
-        composition = Composer(self.configuration)
+        composition = Composer(self.configuration).music
 
-        log_debug(f"{composition.full_music()}")
+        log_debug(f"{composition}")
 
         # self.write_ly(self.format_ly(composition))
         # self.run_lilypond(self.composition.filename)
@@ -558,17 +558,11 @@ class MainWindow(QMainWindow):
     # prepares string
     def format_ly(self, composition):
         left_music, right_music = composition.full_music()
-        return LY_BLOCK_1 + self.lywrite(left_music) + LY_BLOCK_2 + self.lywrite(right_music) + LY_BLOCK_3
+        return LY_BLOCK_1 + self.lywrite_hand(left_music) + LY_BLOCK_2 + self.lywrite_hand(right_music) + LY_BLOCK_3
 
     # converts a hand's music list into block of lilypond string
-    # Reminder: music is a list of measures. measure is a list of notes in numbered notation (0-87)
-    def lywrite(self, music):
-        lywritten = []
-        for m in music:
-            for n in m:
-                lywritten.append(self.spn_to_ly(n))
-
-        return " ".join(lywritten)
+    def lywrite_hand(self, hand):
+        pass
 
     # writes string to .ly file
     def write_ly(self, lywritten):
@@ -593,8 +587,8 @@ class Configuration:
     # Adds song data at compose time with finalized user input
     def finalize_song_parameters(self):
         for segment in self.segments:
-            segment['style']['duration_sheet'], segment['style']['note_sheet'] = get_sheets(segment['style']['timesig_den'])
-            segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet'])
+            segment['style']['duration_sheet_ascending'], segment['style']['duration_sheet_descending'], segment['style']['note_sheet'] = get_sheets(segment['style']['timesig_den'])
+            segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet_descending'])
 
             segment['style']['right_prime_weights'], segment['style']['left_prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
 
