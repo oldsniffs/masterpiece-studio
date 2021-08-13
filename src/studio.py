@@ -548,7 +548,7 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_song_parameters()
-        composition = Composer(self.configuration).music
+        composition = Composer(self.configuration).segments
 
         log_debug(f"{composition}")
 
@@ -561,8 +561,17 @@ class MainWindow(QMainWindow):
         return LY_BLOCK_1 + self.lywrite_hand(left_music) + LY_BLOCK_2 + self.lywrite_hand(right_music) + LY_BLOCK_3
 
     # converts a hand's music list into block of lilypond string
-    def lywrite_hand(self, hand):
-        pass
+    def music_to_ly(self, composition):
+        left_music = []
+        right_music = []
+        for segment in composition:
+            for measure in segment:
+                for measure_notes, lymusic in (measure['right_notes'], right_music), (measure['left_notes'], left_music):
+                    for note in measure_notes:
+
+
+
+
 
     # writes string to .ly file
     def write_ly(self, lywritten):
@@ -587,10 +596,11 @@ class Configuration:
     # Adds song data at compose time with finalized user input
     def finalize_song_parameters(self):
         for segment in self.segments:
-            segment['style']['duration_sheet_ascending'], segment['style']['duration_sheet_descending'], segment['style']['note_sheet'] = get_sheets(segment['style']['timesig_den'])
-            segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet_descending'])
+            segment['style']['duration_sheet'], segment['style']['note_sheet'], segment['style']['note_sheet_descending'] = get_sheets(segment['style']['timesig_den'])
+            segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet'])
 
             segment['style']['right_prime_weights'], segment['style']['left_prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
+            # Skew weights for left
 
             # Set up ready-to-use measures list
             segment['measures'] = [{
@@ -607,7 +617,7 @@ class Configuration:
         pass
 
     def get_increment(self, prime_durations):
-        return prime_durations[-1]
+        return prime_durations[6]
 
     #
     # As per design doc, if notesheet is implemented, this will change

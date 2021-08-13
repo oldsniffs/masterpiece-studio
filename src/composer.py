@@ -40,11 +40,12 @@ notes are drawn from ['style']['note_sheet']
 
 durations are: (value, weight)
 
-notes are: {type: "note type", 
-			duration: duration,
-			starting beat in measure: <- self.count, *
-			scientific pitch notation: "" <-,
-			extra engraving info: [] <-}
+notes are: {'name':, real world note name,
+			'masterpiece_index': index int,
+			'beat_value': duration of beat value,
+			'start': <- insertion point tracker, *
+			'spn': "" <- scientific pitch notation,
+			'engraving': [] <- extra engraving info}
 * "<-" means it gets added in by the Composer class
 
 fill_music generates music, filling in each measure's ['music'] list
@@ -66,12 +67,14 @@ class Composer:
 		self.current_measure = self.segments[0]['measures'][0]
 		self.next_measure = self.segments[0]['measures'][1]
 		self.increment = self.current_measure['style']['increment']
-		self.count = 0 # count in measure
 		self.hand = None
+		self.count = 0 # count in measure
+		self.remainder = 0
+		self.tracker = 0
+		self.terminus = 0
 		self.note_tally = [0 for i in range(len(ALL_NOTES))]
 
 		self.fill_music()
-		self.music = self.full_music()  # lists for right and left notation compiled from the segments - 7/9 Likely dep
 
 	def fill_music(self):
 		log_header(f"Filling Music")
@@ -81,9 +84,12 @@ class Composer:
 			log_sub_header(f"Filling segment consisting of measures: {segment['start']} -- and -- {segment['stop']}")
 			self.increment = segment['style']['increment']
 
-			for m in len(range(segment['measures'])):
+			for m in range(len(segment['measures'])):
 				self.current_measure = segment['measures'][m]
-				self.next_measure = segment['measure'][m+1]
+				try:
+					self.next_measure = segment['measures'][m+1]
+				except IndexError as e:
+					self.next_measure = None
 				self.current_style = self.current_measure['style']
 				log_info(f"Filling Measure: {m+1}")
 				# Load overflow into live_durations
@@ -93,26 +99,12 @@ class Composer:
 					self.right_live_durations.append(duration)
 
 				for beat in range(self.current_measure['style']['timesig_num']):
-					log_debug(f"== Beat {beat} ==")
+					log_info(f"== Beat {beat} ==")
 					for inc in range(int(1/self.increment)):  # number of increments per beat
 
 						if self.current_measure['kites']:  # Place to process kites
 							# load planned duration into live
 							pass
-
-						"""Must fulfill:
-						1. Proper duration division
-						What: durations do not cross through beats if they did not start on one
-						How: If duration does not start on a beat and crosses a beat marker, spawn a note or notes
-						tied together to the start of the next beat, then spawn tied notes to complete the duration's 
-						term
-						Precisely how durations should be allocated among it's tied notes before and after beats:
-						
-						2. Sync factor
-						3. Left weight modification -
-						
-						8/1 As of, note proportion maintenance is in design, but not being implemented yet 
-						"""
 
 						# Right
 						self.hand = "right"
@@ -123,13 +115,9 @@ class Composer:
 							# Adjust weights -- [f'{self.hand}_prime_weights']
 							weights = self.current_style['right_prime_weights']
 
-							self._weight_meter_strength(weights)
-							# meter_strength adjustment (replaces old "snapping")
+							self.weigh_meter_strength(weights)
 
-							prime = self.new_duration()
-
-							# properly distribute duration
-							self.distribute_duration(prime)
+							self.new_duration()
 
 						for live_duration in self.right_live_durations:
 							# Establish hierarchy of any beat marks crossed
@@ -138,10 +126,7 @@ class Composer:
 						# Left
 						self.hand = "left"
 						if not self.left_live_durations:
-							# Skew weights for left if "dragged"   ---- 8/4 move to finalize song params
-							prime_duration = self.new_duration()
-							self.current_measure['left_durations'].append(prime_duration)
-							self.left_live_durations.append(prime_duration)
+							self.new_duration()
 
 						self.increment_count()
 
@@ -149,7 +134,7 @@ class Composer:
 
 						# measure.music.append({'note_type': note_type, 'duration': duration, 'start_beat': start_beat, 'spn': spn, 'engraving_info': engraving_info})
 
-	def _weigh_meter_strength(self, weights):
+	def weigh_meter_strength(self, weights):
 		if random.randint(1,100) < self.current_style['meter_strength']:
 
 			# get snapping durations - list of snapping values
@@ -171,101 +156,112 @@ class Composer:
 		prime = self.current_measure['style']['duration_sheet'][random.choices(PRIME_DURATIONS_INDEX, self.current_measure['style'][f'{self.hand}_prime_weights'])[0]] # a random duration from the duration_sheet
 		log_debug(f"new prime duration: {prime}")
 		self.current_measure[f'{self.hand}_durations'].append((prime, self.count))
-		self.__dict__[f'{self.hand}_live_durations'].append([prime, prime])  # ref to duration, life
+		self.__dict__[f'{self.hand}_live_durations'].append(prime)  # ref to duration, life
 
 		self.distribute_duration(prime)
 
 	# chops up duration into notes
 	# put notes in right_music or left_music
 	def distribute_duration(self, duration):
-		log_info(f"Distributing duration {duration} at from count {self.count}")
+		log_info(f"Distributing duration {duration} at from count {self.count} in the {self.hand} hand")
 		# break on division_beats
-		# iterate through succeeding division beats in durations life
-		remainder = duration
+		self.remainder = duration
 		notes = [] # (count, note)
-		tracker = self.count
+		self.tracker = self.count
 		division = int(self.count)
-		terminus = self.count + duration
-		if terminus > self.current_style['timesig_num']:
-			terminus = self.current_style['timesig_num']
-		final_division = int(terminus)
+		self.terminus = self.count + duration
+
+		# Move any overflow duration to next measure and adjust this duration's terminus accordingly
+		if (overflow := self.terminus - self.current_style['timesig_num']) > 0:
+			log_info(f"self.terminus {self.terminus} is outside current measure. Sending overflow to next measure in segment")
+			self.terminus = self.current_style['timesig_num']
+			try:
+				self.next_measure[f'{self.hand}_durations'].append(overflow)
+				self.remainder -= overflow
+			except TypeError:  # self.next_measure is None because current measure ends segment
+				log_debug(f"Overflow cancelled because segment ended")
+		final_division = int(self.terminus)
 
 		# if start is off division start and reaches a division -- ascending order to endpoint
-		if self.count != division and terminus >= division+1:
-			distance = division+1 - self.count
-			fill_notes = self.fill_gap(distance)
-			for fn in reversed(fill_notes):
-				self.current_measure[f"{self.hand}_music"].append(fn)
-			tracker += distance
-			remainder -= distance
+		if self.tracker != division and self.terminus >= division+1:
+			log_debug(f"starting OFF, terminus at {self.terminus}")
+			distance = division+1 - self.tracker
+			fill_notes = reversed(self.fill_distance(distance))
+			for fn in fill_notes[1:]: #apply tied
+				self.current_measure[f"{self.hand}_music"].write_note(fn, engraving="tie")
+				self.tracker += fn['beat_value']
+			if self.remainder:
+				self.current_measure[f'{self.hand}_music'].write_note(fill_notes[1], engraving="tie")
+			else:
+				self.current_measure[f'{self.hand}_music'].write_note(fill_notes[1])
+			self.tracker += distance
+			self.remainder -= distance
 
-		# Previous if statement guarantees that if still distributing, tracker is now on a division
-		while distance:= terminus - tracker > 0:
-			# measure
-
-
-			# process to end of measure, send remainder to next measure
-			print(distance)
+		# Previous condition guarantees that if still distributing, self.tracker is now on a division
+		# Now measure and cut the distance into notes until self.remainder is 0
+		# If adjustments to distribution need to be made it should be in the measuring process
+		while self.remainder > 0:
+			log_info(f"measuring note for remainder: {self.remainder}, tracker: {self.tracker}, terminus: {self.terminus}")
+			# Measure (verb)
 			# does it end before next division?
-			if remainder < 1:
-				distance = remainder
-			# how many more divisions it crosses?
-			remaining_divs = int(remainder)
-			# does it cross a measure?
-			if tracker + remaining_divs > self.current_style['timesig_num']:
-				pass
+			if self.remainder < 1:
+				for note in self.fill_distance(self.remainder):
+					pass
+			# measure number of whole divisions
+			else:
+				distance = int(self.remainder)
+			notes = self.fill_distance(distance)
 
-			# cut
+			# Cut
 
-			for note in self.fill_gap(distance):
-				self.current_measure[f"{self.hand}_music"].append(n)
+			for note in self.fill_distance(distance):
+				self.current_measure[f"{self.hand}_music"].append(note)
 			return
 
-		# end of measure reached with remainder
-		if remainder:
-			self.next_measure[f"{self.hand}_durations"].append(remainder)
+		# end of measure reached with self.remainder
+		if self.remainder:
+			try:
+				self.next_measure[f"{self.hand}_durations"].append(self.remainder)
+			except TypeError as e:
+				log_info(f"Type Error hit processing overflow, indicating end of measure")
 
-
-		# get remaining division markers
-		# iterate remaining division markers
-		for b in range(division, self.current_style['timesig_num']):
-			if self.count != b: # Start OFF division
-				log_info(f"at count {self.count}, we are starting OFF a division")
-
-				while tracker < b:
-					pass
-
-			# if strong, go as far as possible
-			else: # Start ON division
-				log_info(f"at count {self.count}, we are starting ON a division")
-
-			# denominate with meter unit
-
-			# send flow_over to next measure (
-		pass
-
-	def _assign_notes(self, notes):
-		pass
+	def write_note(self, note, engraving=""):
+		note['engraving'] = engraving  # Engraving is string of comma separated keywords
+		self.current_measure[f"{self.hand}_music"].append(note)
 
 	# Returns untied list of notes in ascending order that fills an amount of beats
 	# needs to get notes by checking their beat values
-	def fill_gap(self, gap):
+	def fill_distance(self, distance):
 		notes = []
-		while gap:
+		while distance:
 			for note in self.current_style['note_sheet']:
-				if note['beat_value'] <= gap:
+				if note['beat_value'] <= distance:
 					notes.append(note)
-					gap -= note['beat_value']
+					distance -= note['beat_value']
 		return notes
 
 
-	# increments durations, removes dead ones
+	# increments count and live durations, removes dead ones
 	def increment_count(self):
+		log_info(f"Incrementing count: {self.count} by {self.increment}")
 		self.count += self.increment
-		for live_duration in + self.left_live_durations + self.right_live_durations:
-			live_duration[1] -= self.increment
-			if not live_duration[1]:
-				del[live_duration]
+		log_debug(f"left live durations: {self.left_live_durations}\nright live durations: {self.right_live_durations}")
+		all_live = self.right_live_durations + self.left_live_durations
+		for live_durations in self.right_live_durations, self.left_live_durations:
+			chopping_block = []
+			for ld in range(len(live_durations)):
+
+				print(live_durations[ld])
+				live_durations[ld] -= self.increment
+				print(live_durations[ld])
+				if live_durations[ld] == 0:
+					chopping_block.append(ld)
+
+			for chop in reversed(chopping_block):
+				log_debug(f"Chopping index {chop} from live durations: {live_durations}")
+				del live_durations[chop]
+
+
 
 	# Generation Utility ========================
 

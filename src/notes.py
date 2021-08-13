@@ -66,9 +66,12 @@ def get_sheets(timesig_den):
 
 	# mirror ordered list of dicts for notes
 	note_sheet = [{'masterpiece_index': n, 'name': ALL_NOTES[n][0], 'beat_value':beat_value(ALL_NOTES[n][1], timesig_den)} for n in range(len(ALL_NOTES))]
-	note_sheet_descending = 
+	note_sheet_descending = sorted(note_sheet, key = lambda note: note['beat_value'])
 
-	return duration_sheet_ascending, duration_sheet_descending, note_sheet
+	log_debug(f"duration_sheet: {duration_sheet}")
+	log_debug(f"note_sheet: {note_sheet}")
+
+	return duration_sheet, note_sheet, note_sheet_descending
 
 
 if __name__ == "__main__":
