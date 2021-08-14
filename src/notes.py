@@ -43,7 +43,7 @@ DOUBLE_DOTTED_NOTES = [
 
 # Durations lists can expand, but beginning would still mirror note indices
 PRIME_DURATIONS = CORE_NOTES + DOTTED_NOTES
-ALL_NOTES = PRIME_DURATIONS + DOUBLE_DOTTED_NOTES
+ALL_MASTERPIECE_NOTES = PRIME_DURATIONS + DOUBLE_DOTTED_NOTES
 
 # Note indices
 PRIME_DURATIONS_INDEX = [i for i in range(len(PRIME_DURATIONS))]
@@ -65,16 +65,19 @@ def get_sheets(timesig_den):
 	duration_sheet = [beat_value(d[1], timesig_den) for d in PRIME_DURATIONS]
 
 	# mirror ordered list of dicts for notes
-	note_sheet = [{'masterpiece_index': n, 'name': ALL_NOTES[n][0], 'beat_value':beat_value(ALL_NOTES[n][1], timesig_den)} for n in range(len(ALL_NOTES))]
-	note_sheet_descending = sorted(note_sheet, key = lambda note: note['beat_value'])
+	note_sheet = [{'masterpiece_index': n, 'name': ALL_MASTERPIECE_NOTES[n][0], 'beat_value':beat_value(ALL_MASTERPIECE_NOTES[n][1], timesig_den)} for n in range(len(ALL_MASTERPIECE_NOTES))]
+	note_beat_values = [note['beat_value'] for note in note_sheet]
+	note_sheet_ascending = sorted(note_sheet, key = lambda note: note['beat_value'])
+	note_sheet_descending = note_sheet_ascending[::-1]
 
 	log_debug(f"duration_sheet: {duration_sheet}")
 	log_debug(f"note_sheet: {note_sheet}")
 
-	return duration_sheet, note_sheet, note_sheet_descending
+	return duration_sheet, note_sheet, note_beat_values, note_sheet_ascending, note_sheet_descending
 
 
 if __name__ == "__main__":
-	duration_sheet_ascending, duration_sheet_descending, note_sheet = get_sheets(4)
-	print(duration_sheet_ascending)
+	duration_sheet, note_sheet, note_beat_values, note_sheet_ascending, note_sheet_descending = get_sheets(4)
+	print(note_sheet_descending)
 	print(note_sheet)
+	print(note_beat_values)

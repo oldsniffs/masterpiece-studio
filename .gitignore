@@ -10,6 +10,7 @@ dep/
 configurations/*
 output/*
 logs/*
+debugging_logs/
 
 .gitignore
 #design_doc.html

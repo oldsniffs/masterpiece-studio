@@ -548,9 +548,9 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_song_parameters()
-        composition = Composer(self.configuration).segments
+        composition = Composer(self.configuration)
 
-        log_debug(f"{composition}")
+        log_debug(f"{composition.note_tally}")
 
         # self.write_ly(self.format_ly(composition))
         # self.run_lilypond(self.composition.filename)
@@ -568,10 +568,7 @@ class MainWindow(QMainWindow):
             for measure in segment:
                 for measure_notes, lymusic in (measure['right_notes'], right_music), (measure['left_notes'], left_music):
                     for note in measure_notes:
-
-
-
-
+                        pass
 
     # writes string to .ly file
     def write_ly(self, lywritten):
@@ -595,10 +592,11 @@ class Configuration:
 
     # Adds song data at compose time with finalized user input
     def finalize_song_parameters(self):
+        segment_index = 0
         for segment in self.segments:
-            segment['style']['duration_sheet'], segment['style']['note_sheet'], segment['style']['note_sheet_descending'] = get_sheets(segment['style']['timesig_den'])
+            segment['index'] = segment_index
+            segment['style']['duration_sheet'], segment['style']['note_sheet'], segment['style']['note_beat_values'], segment['style']['note_sheet_ascending'], segment['style']['note_sheet_descending'] = get_sheets(segment['style']['timesig_den'])
             segment['style']['increment'] = self.get_increment(segment['style']['duration_sheet'])
-
             segment['style']['right_prime_weights'], segment['style']['left_prime_weights'], segment['style']['pair_weights'], segment['style']['length_weights'] = self.get_weight_lists(segment['style']['weights'])
             # Skew weights for left
 
@@ -612,6 +610,7 @@ class Configuration:
                 'right_music':[],
                 'left_music':[]
             } for measure in range(segment['start'], segment['stop'])]
+            segment_index += 1
 
     def set_path(self, name):
         pass
