@@ -8,8 +8,8 @@ dep/
 
 # Program-generated files
 configurations/*
-output/*
-logs/*
+compositions/*
+logs/
 debugging_logs/
 
 .gitignore

@@ -70,6 +70,7 @@ class Composer:
 		log_header('Composition constructor starting')
 
 		self.name = configuration.composition_name
+		self.filename = self.name.replace(" ", "_")
 
 		self.segments = configuration.segments
 

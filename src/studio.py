@@ -552,21 +552,20 @@ class MainWindow(QMainWindow):
 
         log_debug(f"{composition.note_tally}")
 
-        # self.write_ly(self.format_ly(composition))
-        # self.run_lilypond(self.composition.filename)
+        if self.configuration.output == "lilypond":
+            right_lynotation, left_lynotation = self.extract_lynotation(composition)
+            right_lymusic, left_lymusic
 
-    # prepares string
-    def format_ly(self, composition):
-        # Convert lists to strings (presumably better than rebuilding strings each time in extract_lynotation)
-        left_lymusic, right_lymusic = self.write_lymusic()
+            self.write_ly(self.format_ly(composition))
+            self.run_lilypond(composition.filename)
 
-        return LY_BLOCK_1 + left_lymusic + LY_BLOCK_2 + right_lymusic + LY_BLOCK_3
-
-    # converts a hand's music list into lists of lily pond notation, separated by lilypond measure dividers: "|"
+    # Prepares lynotation from composition.segments
+    # separated by lilypond measure dividers: "|"
+    # Presumably it is better to build lists to combine into strings, than rebuilding strings for each addition
     def extract_lynotation(self, composition):
         left_lynotation = []
         right_lynotation = []
-        for segment in composition:
+        for segment in composition.segments:
             for measure in segment:
                 measure_left_lynotation = []
                 measure_right_lynotation = []
@@ -582,6 +581,7 @@ class MainWindow(QMainWindow):
                 left_lynotation.append("|")
                 log_debug(f"from {measure['number']} right_music extracted ly music: {measure_right_lynotation}")
                 log_debug(f"from {measure['number']} left_music extracted ly music:  {measure_left_lynotation}")
+        return right_lynotation, left_lynotation
 
     def write_lymusic(self, right_lynotation, left_lynotation):
         right_lymusic = " ".join(right_lynotation)
@@ -593,10 +593,17 @@ class MainWindow(QMainWindow):
         duration = 4/note['beat_value']
         return f"{pitch}{duration}"
 
+    # prepares string
+    def format_ly(self, composition):
+        left_lymusic, right_lymusic = self.write_lymusic()
+
+        return LY_BLOCK_1 + left_lymusic + LY_BLOCK_2 + right_lymusic + LY_BLOCK_3
+
     # writes string to .ly file
-    def write_ly(self, lywritten):
+    def write_ly(self, ly):
         file = open(f"{self.configuration.filepath}", 'wb')
-        pickle.dump(lywritten, file)
+        pickle.dump(ly, file)
+        file.close()
 
     # Runs Lilypond on given filepath
     def run_lilypond(self, filename):
