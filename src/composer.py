@@ -31,7 +31,13 @@ each segment contains ['measures'] - a list of measure dictionaries to be filled
 live_durations [duration, balance] - 8/4 just balance?
  'durations', 'music' 
 
-measure dicts are: {'number':integer, 'musical_parameters':points to segment's item, 'kites':[], 'right_durations':[],'left_durations':[], 'right_music':[], 'left_music':[]}
+measure dicts are: {'number':integer, 
+					'musical_parameters':points to segment's item, 
+					'kites':[], 
+					'right_durations':[],
+					'left_durations':[], 
+					'right_music':[], 
+					'left_music':[]}
 'right_durations' and 'left_durations' contain sequential lists of prime durations beginning in that measure
 'right_music' and 'left_music' contain sequential list of notes, which precisely represent the sheet music
 
@@ -50,7 +56,9 @@ notes are: {'name':, real world note name,
 			'start': <- insertion point tracker, *
 			'spn': "" <- scientific pitch notation,
 			'engraving': [] <- extra engraving info}
+			
 * "<-" means it gets added in by the Composer class
+
 
 fill_music generates music, filling in each measure's ['music'] list
 self.full_music() returns full music lists for right and left hands
@@ -83,6 +91,12 @@ class Composer:
 		self.fill_music()
 
 	def fill_music(self):
+		self.fill_rhythm()
+		self.fill_pitches()
+
+	# fill_rhythms and Supporting Methods ===========
+
+	def fill_rhythm(self):
 		log_header(f"Filling Music")
 
 		for segment in self.segments:
@@ -113,8 +127,9 @@ class Composer:
 							# load planned duration into live
 							pass
 
+						# For tighter code:
 						# Could use for self.hand = for hand in "left", "right"
-						# If live durations were moved to segment, it could be accessed with string formatting.0
+						# If live durations were moved to segment or above, it could be accessed with string formatting
 
 						# Right
 						self.hand = "right"
@@ -283,7 +298,6 @@ class Composer:
 		# record to note_tally
 		self.note_tally[note['masterpiece_index']] += 1
 
-
 	# Returns untied list of notes in descending order that fills an amount of beats
 	def fill_distance(self, distance, ascending=False):
 		log_debug(f"Filling_distance({distance}, ascending={ascending})")
@@ -336,8 +350,17 @@ class Composer:
 		if self.count % .25 == 0:
 			log_info(f"Increment brings count to {self.count}")
 
+	# fill_pitches and Supporting Methods ============
 
-	# Generation Utility ========================
+	def fill_pitches(self):
+		for segment in self.segments:
+			for measure in segment['measures']:
+				for note in measure['left_notes']:
+					note['spn'] = "A3"
+				for note in measure['right_notes']:
+					note['spn'] = "E4"
+
+	# Generation Utility =============================
 
 	# Probably Dep
 	def check_beat_strength(self, duration, count):

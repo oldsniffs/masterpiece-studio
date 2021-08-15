@@ -7,7 +7,7 @@ from studio_ui import Ui_MainWindow
 
 from default_settings import *
 from src.composer import *
-from src.formatting import *
+from src.lily import *
 
 
 class MainWindow(QMainWindow):
@@ -508,7 +508,7 @@ class MainWindow(QMainWindow):
 
     def index_to_ly(self, index, mode):
         if mode == "♯":
-            return SHARP_LYPITCHES[index]
+            return SHARP_PITCHES[index]
         else:
             return FLAT_PITCHES[index]
 
@@ -557,18 +557,41 @@ class MainWindow(QMainWindow):
 
     # prepares string
     def format_ly(self, composition):
-        left_music, right_music = composition.full_music()
-        return LY_BLOCK_1 + self.lywrite_hand(left_music) + LY_BLOCK_2 + self.lywrite_hand(right_music) + LY_BLOCK_3
+        # Convert lists to strings (presumably better than rebuilding strings each time in extract_lynotation)
+        left_lymusic, right_lymusic = self.write_lymusic()
 
-    # converts a hand's music list into block of lilypond string
-    def music_to_ly(self, composition):
-        left_music = []
-        right_music = []
+        return LY_BLOCK_1 + left_lymusic + LY_BLOCK_2 + right_lymusic + LY_BLOCK_3
+
+    # converts a hand's music list into lists of lily pond notation, separated by lilypond measure dividers: "|"
+    def extract_lynotation(self, composition):
+        left_lynotation = []
+        right_lynotation = []
         for segment in composition:
             for measure in segment:
-                for measure_notes, lymusic in (measure['right_notes'], right_music), (measure['left_notes'], left_music):
-                    for note in measure_notes:
-                        pass
+                measure_left_lynotation = []
+                measure_right_lynotation = []
+                for note in measure['right_music']:
+                    measure_right_lynotation.append(f"{self.note_to_ly(note)}")
+                    measure_right_lynotation.append("\n")
+                for note in measure['left_music']:
+                    measure_left_lynotation.append(f"{self.note_to_ly(note)} ")
+                    measure_left_lynotation.append("\n")
+                right_lynotation.append(measure_right_lynotation)
+                right_lynotation.append("|")
+                left_lynotation.append(measure_left_lynotation)
+                left_lynotation.append("|")
+                log_debug(f"from {measure['number']} right_music extracted ly music: {measure_right_lynotation}")
+                log_debug(f"from {measure['number']} left_music extracted ly music:  {measure_left_lynotation}")
+
+    def write_lymusic(self, right_lynotation, left_lynotation):
+        right_lymusic = " ".join(right_lynotation)
+        left_lymusic = " ".join(left_lynotation)
+        return right_lymusic, left_lymusic
+
+    def note_to_ly(self, note):
+        pitch = self.spn_to_ly(note['spn'])
+        duration = 4/note['beat_value']
+        return f"{pitch}{duration}"
 
     # writes string to .ly file
     def write_ly(self, lywritten):
