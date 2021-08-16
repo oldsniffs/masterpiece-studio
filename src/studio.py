@@ -7,8 +7,8 @@ from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
 from default_settings import *
-from src.composer import *
-from src.lily import *
+from composer import *
+from lily import *
 
 
 class MainWindow(QMainWindow):
@@ -630,7 +630,7 @@ class MainWindow(QMainWindow):
 
     # prepares string
     def format_ly(self, right_lymusic, left_lymusic):
-        time_signature = self.composi
+
         return LY_BLOCK_1 + right_lymusic + LY_BLOCK_2 + left_lymusic + LY_BLOCK_3
 
     # writes string to .ly file
@@ -690,7 +690,7 @@ class Configuration:
             } for measure in range(segment['start'], segment['stop'])]
             segment_index += 1
         self.finalize_composition_filepath()
-        self.time_
+        # Do time sig
 
     def finalize_composition_filepath(self):
         self.composition_file_namebase = self.composition_name.replace(" ", "_")
@@ -729,4 +729,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

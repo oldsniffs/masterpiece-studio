@@ -1,7 +1,7 @@
 import random
 import os
 
-from src.custom_logging import *
+from custom_logging import *
 from notes import *
 
 """
