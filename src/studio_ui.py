@@ -429,37 +429,37 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.bpm_bar)
 
-        self.emphasis_widget = QWidget(self.timing_spacewidget)
-        self.emphasis_widget.setObjectName(u"emphasis_widget")
+        self.beats_division_widget = QWidget(self.timing_spacewidget)
+        self.beats_division_widget.setObjectName(u"beats_division_widget")
         sizePolicy10 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy10.setHorizontalStretch(0)
         sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.emphasis_widget.sizePolicy().hasHeightForWidth())
-        self.emphasis_widget.setSizePolicy(sizePolicy10)
-        self.emphasis_widget.setMinimumSize(QSize(200, 0))
-        self.verticalLayout_40 = QVBoxLayout(self.emphasis_widget)
+        sizePolicy10.setHeightForWidth(self.beats_division_widget.sizePolicy().hasHeightForWidth())
+        self.beats_division_widget.setSizePolicy(sizePolicy10)
+        self.beats_division_widget.setMinimumSize(QSize(200, 0))
+        self.verticalLayout_40 = QVBoxLayout(self.beats_division_widget)
         self.verticalLayout_40.setObjectName(u"verticalLayout_40")
-        self.emphasis_layout_1 = QWidget(self.emphasis_widget)
-        self.emphasis_layout_1.setObjectName(u"emphasis_layout_1")
-        self.horizontalLayout_39 = QHBoxLayout(self.emphasis_layout_1)
+        self.division_bar = QWidget(self.beats_division_widget)
+        self.division_bar.setObjectName(u"division_bar")
+        self.horizontalLayout_39 = QHBoxLayout(self.division_bar)
         self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
-        self.emphasis_label = QLabel(self.emphasis_layout_1)
-        self.emphasis_label.setObjectName(u"emphasis_label")
-        self.emphasis_label.setMaximumSize(QSize(80, 16777215))
-        self.emphasis_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.division_label = QLabel(self.division_bar)
+        self.division_label.setObjectName(u"division_label")
+        self.division_label.setMaximumSize(QSize(80, 16777215))
+        self.division_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.horizontalLayout_39.addWidget(self.emphasis_label)
+        self.horizontalLayout_39.addWidget(self.division_label)
 
-        self.emphasis_display = QLabel(self.emphasis_layout_1)
-        self.emphasis_display.setObjectName(u"emphasis_display")
-        self.emphasis_display.setStyleSheet(u"")
+        self.division_display = QLabel(self.division_bar)
+        self.division_display.setObjectName(u"division_display")
+        self.division_display.setStyleSheet(u"")
 
-        self.horizontalLayout_39.addWidget(self.emphasis_display)
+        self.horizontalLayout_39.addWidget(self.division_display)
 
 
-        self.verticalLayout_40.addWidget(self.emphasis_layout_1)
+        self.verticalLayout_40.addWidget(self.division_bar)
 
-        self.beats_widget = QWidget(self.emphasis_widget)
+        self.beats_widget = QWidget(self.beats_division_widget)
         self.beats_widget.setObjectName(u"beats_widget")
         sizePolicy11 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy11.setHorizontalStretch(0)
@@ -475,7 +475,56 @@ class Ui_MainWindow(object):
         self.verticalLayout_40.addWidget(self.beats_widget, 0, Qt.AlignBottom)
 
 
-        self.horizontalLayout_2.addWidget(self.emphasis_widget)
+        self.horizontalLayout_2.addWidget(self.beats_division_widget)
+
+        self.widget_18 = QWidget(self.timing_spacewidget)
+        self.widget_18.setObjectName(u"widget_18")
+        self.verticalLayout_59 = QVBoxLayout(self.widget_18)
+        self.verticalLayout_59.setSpacing(2)
+        self.verticalLayout_59.setObjectName(u"verticalLayout_59")
+        self.verticalLayout_59.setContentsMargins(2, 2, 2, 2)
+        self.meter_str_widget = QWidget(self.widget_18)
+        self.meter_str_widget.setObjectName(u"meter_str_widget")
+        sizePolicy5.setHeightForWidth(self.meter_str_widget.sizePolicy().hasHeightForWidth())
+        self.meter_str_widget.setSizePolicy(sizePolicy5)
+        self.horizontalLayout_40 = QHBoxLayout(self.meter_str_widget)
+        self.horizontalLayout_40.setSpacing(2)
+        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
+        self.horizontalLayout_40.setContentsMargins(2, 2, 2, 2)
+        self.meter_str_label = QLabel(self.meter_str_widget)
+        self.meter_str_label.setObjectName(u"meter_str_label")
+        self.meter_str_label.setAlignment(Qt.AlignRight|Qt.AlignTop|Qt.AlignTrailing)
+
+        self.horizontalLayout_40.addWidget(self.meter_str_label)
+
+        self.meter_str_slider_layout = QWidget(self.meter_str_widget)
+        self.meter_str_slider_layout.setObjectName(u"meter_str_slider_layout")
+        self.verticalLayout_61 = QVBoxLayout(self.meter_str_slider_layout)
+        self.verticalLayout_61.setSpacing(4)
+        self.verticalLayout_61.setObjectName(u"verticalLayout_61")
+        self.verticalLayout_61.setContentsMargins(4, 0, 2, 2)
+        self.meter_str_display = QLabel(self.meter_str_slider_layout)
+        self.meter_str_display.setObjectName(u"meter_str_display")
+        sizePolicy5.setHeightForWidth(self.meter_str_display.sizePolicy().hasHeightForWidth())
+        self.meter_str_display.setSizePolicy(sizePolicy5)
+        self.meter_str_display.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+
+        self.verticalLayout_61.addWidget(self.meter_str_display)
+
+        self.meter_str_slider = QSlider(self.meter_str_slider_layout)
+        self.meter_str_slider.setObjectName(u"meter_str_slider")
+        self.meter_str_slider.setOrientation(Qt.Horizontal)
+
+        self.verticalLayout_61.addWidget(self.meter_str_slider)
+
+
+        self.horizontalLayout_40.addWidget(self.meter_str_slider_layout)
+
+
+        self.verticalLayout_59.addWidget(self.meter_str_widget)
+
+
+        self.horizontalLayout_2.addWidget(self.widget_18, 0, Qt.AlignTop)
 
         self.horizontalSpacer = QSpacerItem(200, 179, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -567,7 +616,9 @@ class Ui_MainWindow(object):
         sizePolicy12.setHeightForWidth(self.snap_widget.sizePolicy().hasHeightForWidth())
         self.snap_widget.setSizePolicy(sizePolicy12)
         self.horizontalLayout_47 = QHBoxLayout(self.snap_widget)
+        self.horizontalLayout_47.setSpacing(0)
         self.horizontalLayout_47.setObjectName(u"horizontalLayout_47")
+        self.horizontalLayout_47.setContentsMargins(0, 0, 0, 0)
         self.snap_label = QLabel(self.snap_widget)
         self.snap_label.setObjectName(u"snap_label")
         sizePolicy1.setHeightForWidth(self.snap_label.sizePolicy().hasHeightForWidth())
@@ -3570,7 +3621,7 @@ class Ui_MainWindow(object):
         self.compose_page.setObjectName(u"compose_page")
         self.widget_3 = QWidget(self.compose_page)
         self.widget_3.setObjectName(u"widget_3")
-        self.widget_3.setGeometry(QRect(10, 50, 1121, 541))
+        self.widget_3.setGeometry(QRect(10, 50, 1121, 261))
         sizePolicy15.setHeightForWidth(self.widget_3.sizePolicy().hasHeightForWidth())
         self.widget_3.setSizePolicy(sizePolicy15)
         self.horizontalLayout_28 = QHBoxLayout(self.widget_3)
@@ -3969,7 +4020,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.content_stack.setCurrentIndex(0)
+        self.content_stack.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -3999,8 +4050,10 @@ class Ui_MainWindow(object):
         self.timesig_den.setItemText(4, QCoreApplication.translate("MainWindow", u"32", None))
         self.timesig_den.setItemText(5, QCoreApplication.translate("MainWindow", u"64", None))
 
-        self.emphasis_label.setText(QCoreApplication.translate("MainWindow", u"Emphasis:", None))
-        self.emphasis_display.setText(QCoreApplication.translate("MainWindow", u"///notes///", None))
+        self.division_label.setText(QCoreApplication.translate("MainWindow", u"Beat Divisions:", None))
+        self.division_display.setText(QCoreApplication.translate("MainWindow", u"///beats///", None))
+        self.meter_str_label.setText(QCoreApplication.translate("MainWindow", u"Meter Strength:", None))
+        self.meter_str_display.setText(QCoreApplication.translate("MainWindow", u"1-100", None))
         self.weights_label.setText(QCoreApplication.translate("MainWindow", u"Weights", None))
         self.prime_roll_label_15.setText(QCoreApplication.translate("MainWindow", u"Rest Conversion", None))
         self.rest_display.setText(QCoreApplication.translate("MainWindow", u"1-100", None))
@@ -4225,7 +4278,8 @@ class Ui_MainWindow(object):
         self.loaf_config_btn.setText(QCoreApplication.translate("MainWindow", u"Load", None))
         self.save_config_btn.setText(QCoreApplication.translate("MainWindow", u"Save Active", None))
         self.label.setText("")
-        self.composition_name_entry.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Song Name", None))
+        self.composition_name_entry.setText("")
+        self.composition_name_entry.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Composition Name", None))
         self.compose_btn.setText(QCoreApplication.translate("MainWindow", u"Compose", None))
         self.label_2.setText("")
         self.filepath_display.setText(QCoreApplication.translate("MainWindow", u"Filepath", None))

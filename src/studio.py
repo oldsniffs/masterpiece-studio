@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
 
         self.animation = None
 
+        self.composition = None
         self.configuration = None
         self.active_style = None
         self.load_configuration(Configuration("unnamed"))
@@ -178,7 +179,23 @@ class MainWindow(QMainWindow):
     # Update and Refresh //////////////////////////////////////////////////////////////////////// Update and Refresh
 
     def refresh_full_ui(self):
-        # weights
+        # Top bar
+        self.refresh_configuration_name()
+
+        # Compose
+        self.refresh_composition_name()
+
+        # Structure
+        self.refresh_length()
+
+        # Style
+
+        # rhythm
+        self.refresh_timesig_num()
+        self.refresh_timesig_den()
+        self.refresh_bpm()
+        self.refresh_snap()
+
         for weight in self.active_style['weights'].keys():
             if "prime" in weight or "pair" in weight:
                 self.refresh_weight(weight)
@@ -186,19 +203,21 @@ class MainWindow(QMainWindow):
                 # handle length weights
                 pass
 
-        # anchors
+        # pitch
+        self.refresh_bounds()
+        self.refresh_keysig()
+
         for anchor in self.active_style['anchors'].keys():
             self.refresh_anchor(anchor)
 
-        # range bounds
-        self.refresh_bounds()
-        self.refresh_length()
-        self.refresh_timesig_num()
-        self.refresh_timesig_den()
-        self.refresh_keysig()
-        self.refresh_composition_name()
-        self.refresh_bpm()
-        self.refresh_snap()
+    # Top Bar ////
+
+    def update_configuration_name(self, text):
+        self.configuration.name = text
+        self.refresh_configuration_name()
+
+    def refresh_configuration_name(self):
+        self.ui.topBar_active_configuration_display.setText(self.configuration.name)
 
     # Compose
     def update_composition_name(self, text):
@@ -207,7 +226,6 @@ class MainWindow(QMainWindow):
     def refresh_composition_name(self):
         self.ui.composition_name_entry.setText(self.configuration.composition_name)
 
-    #
     # Rhythm /////
 
     # Timesig
@@ -477,8 +495,6 @@ class MainWindow(QMainWindow):
 
     # UI Utility ////////////////////////////////////////////////////////////////////////////////// UI Utility
 
-    # Save and Load Configurations //////
-
     def bound_slider_index_to_spn(self, index):
         index += 9  # fills 0 octave
         octave = int(index / 12)
@@ -496,13 +512,13 @@ class MainWindow(QMainWindow):
         elif "♭" in spn:
             ly.append("es")
 
-        octave = spn[-1]  # for each octave above or below 3 (middle octave), add "'" or ","
+        octave = int(spn[-1])  # for each octave above or below 3 (middle octave), add "'" or ","
         while octave != 3:
             if octave < 3:
-                ly.append(",")
+                ly += ","
                 octave += 1
             else:
-                ly.append("'")
+                ly += "'"
                 octave -= 1
         return ly
 
@@ -512,16 +528,19 @@ class MainWindow(QMainWindow):
         else:
             return FLAT_PITCHES[index]
 
-    # Unsure /////////////////////////////////////////////////////////////////////////////////////// Unsure
+    # Save and Load Configurations //////
 
     def save_configuration_dialog(self):
+        os.chdir("configurations")
         save_dialog = QFileDialog.getSaveFileName(self.ui.dialog_anchor, "Save Configuration",
-                                                  f"{os.getcwd()}/configurations", "*.cf",
+                                                  f"{os.getcwd()}", "*.cf",
                                                   options=QFileDialog.DontUseNativeDialog)
         if save_dialog[0]:
             configuration_filename = ""
             if save_dialog[0][-3:] != '.cf':
                 configuration_filename = save_dialog[0] + '.cf'
+            saved_as = configuration_filename[len(os.getcwd()):]
+            self.update_configuration_name(saved_as)
             self.write_configuration(configuration_filename)
 
     def write_configuration(self, filename):
@@ -529,7 +548,7 @@ class MainWindow(QMainWindow):
 
     def load_configuration_dialog(self):
         filename = QFileDialog.getOpenFileName(self.ui.dialog_anchor, "Load Configuration",
-                                                  f"{os.getcwd()}/configurations", "*.cf",
+                                                  f"{os.getcwd()}/configurations/", "*.cf",
                                                   options=QFileDialog.DontUseNativeDialog)[0]
         if filename:
             try:
@@ -548,16 +567,20 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_song_parameters()
-        composition = Composer(self.configuration)
+        self.composition = Composer(self.configuration)
 
-        log_debug(f"{composition.note_tally}")
+        log_debug(f"{self.composition.note_tally}")
 
         if self.configuration.output == "lilypond":
-            right_lynotation, left_lynotation = self.extract_lynotation(composition)
-            right_lymusic, left_lymusic
+            log_header(f"Beginning lilypond output process")
+            right_lynotation, left_lynotation = self.extract_lynotation(self.composition)
+            right_lymusic, left_lymusic = self.write_lymusic(right_lynotation, left_lynotation)
 
-            self.write_ly(self.format_ly(composition))
-            self.run_lilypond(composition.filename)
+            log_debug(f"right_lymusic: {right_lymusic}")
+
+            ly = self.format_ly(right_lymusic, left_lymusic)
+            self.write_ly(ly)
+            self.run_lilypond(self.composition.filename)
 
     # Prepares lynotation from composition.segments
     # separated by lilypond measure dividers: "|"
@@ -566,42 +589,53 @@ class MainWindow(QMainWindow):
         left_lynotation = []
         right_lynotation = []
         for segment in composition.segments:
-            for measure in segment:
+            for measure in segment['measures']:
                 measure_left_lynotation = []
                 measure_right_lynotation = []
                 for note in measure['right_music']:
                     measure_right_lynotation.append(f"{self.note_to_ly(note)}")
-                    measure_right_lynotation.append("\n")
+                measure_right_lynotation.append("\n")
                 for note in measure['left_music']:
-                    measure_left_lynotation.append(f"{self.note_to_ly(note)} ")
-                    measure_left_lynotation.append("\n")
+                    measure_left_lynotation.append(f"{self.note_to_ly(note)}")
+                measure_left_lynotation.append("\n")
                 right_lynotation.append(measure_right_lynotation)
-                right_lynotation.append("|")
                 left_lynotation.append(measure_left_lynotation)
-                left_lynotation.append("|")
-                log_debug(f"from {measure['number']} right_music extracted ly music: {measure_right_lynotation}")
-                log_debug(f"from {measure['number']} left_music extracted ly music:  {measure_left_lynotation}")
+                log_debug(f"from measure {measure['number']} right_music extracted ly music: {measure_right_lynotation}")
+                log_debug(f"from measure {measure['number']} left_music extracted ly music:  {measure_left_lynotation}")
         return right_lynotation, left_lynotation
 
+    def note_to_ly(self, note):
+        tie = ""
+        lypitch = self.spn_to_ly(note['spn'])
+        lynote = self.beat_value_to_ly(note)
+        if "tie" in note['engraving']:
+            tie = "~"
+        return f"{lypitch}{lynote}{tie}"
+
+    # spn_to_ly is up with range ui methods
+    def beat_value_to_ly(self, note):
+        return LY_NOTE_NOTATIONS[note['masterpiece_index']]
+
     def write_lymusic(self, right_lynotation, left_lynotation):
-        right_lymusic = " ".join(right_lynotation)
-        left_lymusic = " ".join(left_lynotation)
+        right_lymusic = []
+        left_lymusic = []
+        for measure in right_lynotation:
+            right_lymusic.append(" ".join(measure))
+        for measure in left_lynotation:
+            left_lymusic.append(" ".join(measure))
+        right_lymusic = "".join(right_lymusic)
+        left_lymusic = "".join(left_lymusic)
         return right_lymusic, left_lymusic
 
-    def note_to_ly(self, note):
-        pitch = self.spn_to_ly(note['spn'])
-        duration = 4/note['beat_value']
-        return f"{pitch}{duration}"
-
     # prepares string
-    def format_ly(self, composition):
-        left_lymusic, right_lymusic = self.write_lymusic()
-
-        return LY_BLOCK_1 + left_lymusic + LY_BLOCK_2 + right_lymusic + LY_BLOCK_3
+    def format_ly(self, right_lymusic, left_lymusic):
+        return LY_BLOCK_1 + right_lymusic + LY_BLOCK_2 + left_lymusic + LY_BLOCK_3
 
     # writes string to .ly file
     def write_ly(self, ly):
-        file = open(f"{self.configuration.filepath}", 'wb')
+        if not os.path.exists(self.configuration.composition_filepath):
+            os.makedirs(self.configuration.composition_filepath)
+        file = open(f"{self.configuration.composition_filename}.ly", 'wb')
         pickle.dump(ly, file)
         file.close()
 
@@ -617,6 +651,11 @@ class Configuration:
     def __init__(self, name):
         self.name = name
         self.composition_name = "Unnamed Composition"
+        self.composition_filepath = ""
+        self.composition_filename = ""
+        self.composition_cmp_filename = ""
+        self.filepath = ""
+        self.output = "lilypond"
         self.segments = [{'start': 1, 'stop': 16, 'length': 16, 'style': STANDARD_STYLE, 'measures': []}]
         self.active_segment = self.segments[0]
 
@@ -634,16 +673,20 @@ class Configuration:
             segment['measures'] = [{
                 'number': measure,
                 'style': segment['style'],
-                'kites':[],
-                'right_durations':[],
+                'kites':{"overflow": False},
+                'right_durations': [],
                 'left_durations':[],
                 'right_music':[],
                 'left_music':[]
             } for measure in range(segment['start'], segment['stop'])]
             segment_index += 1
+        self.finalize_composition_filepath()
 
-    def set_path(self, name):
-        pass
+    def finalize_composition_filepath(self):
+        self.composition_file_namebase = self.composition_name.replace(" ", "_")
+        self.composition_filepath = f"{os.getcwd()}/compositions/{self.composition_file_namebase}/"
+        self.composition_cmp_filename = f"{self.composition_filepath}/{self.composition_file_namebase}.cmp"
+        self.composition_filename = f"{self.composition_filepath}{self.composition_file_namebase}"
 
     def get_increment(self, prime_durations):
         return prime_durations[6]

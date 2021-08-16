@@ -449,7 +449,7 @@ QLineEdit:checked:hover {
           <string notr="true"/>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="style_page">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -7774,7 +7774,7 @@ QLineEdit:checked:hover {
              <x>10</x>
              <y>50</y>
              <width>1121</width>
-             <height>541</height>
+             <height>261</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -8036,8 +8036,11 @@ QPushButton:focus {
                    <pointsize>11</pointsize>
                   </font>
                  </property>
+                 <property name="text">
+                  <string/>
+                 </property>
                  <property name="placeholderText">
-                  <string>Song Name</string>
+                  <string>Composition Name</string>
                  </property>
                 </widget>
                </item>
