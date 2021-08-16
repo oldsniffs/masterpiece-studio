@@ -223,7 +223,9 @@ class Composer:
 		division = int(self.count)
 		self.terminus = self.count + duration
 		# Overflow
+		overflowed = False
 		if (overflow := self.terminus - self.current_style['timesig_num']) > 0:
+			overflowed = True
 			self.flow_over(overflow)
 		final_division = int(self.terminus)
 
@@ -237,7 +239,7 @@ class Composer:
 			log_debug(f"Tracker {self.tracker} != division {division} and terminus {self.terminus} >= next division {division+1}")
 
 			# If terminus ends on a division and distance to terminus can use a single note, do it
-			if self.terminus == int(self.terminus):
+			if self.terminus == int(self.terminus) and not overflowed:
 				log_debug(f"Terminus {self.terminus} is on a division. Trying to match an exact note for remainder {self.remainder}")
 				for beat_value in self.current_style['note_beat_values']:
 					if beat_value == self.remainder:
@@ -282,7 +284,7 @@ class Composer:
 				duration_notes.append(note)
 
 		for d in range(len(duration_notes)):
-			if d == len(duration_notes)-1:
+			if d == len(duration_notes)-1 and self:
 				self.write_note(duration_notes[d])
 			else:
 				self.write_note(duration_notes[d], engraving=["tie"])

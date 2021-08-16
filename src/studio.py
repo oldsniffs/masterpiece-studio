@@ -532,7 +532,6 @@ class MainWindow(QMainWindow):
     # Save and Load Configurations //////
 
     def save_configuration_dialog(self):
-        os.chdir("configurations")
         save_dialog = QFileDialog.getSaveFileName(self.ui.dialog_anchor, "Save Configuration",
                                                   f"{os.getcwd()}", "*.cf",
                                                   options=QFileDialog.DontUseNativeDialog)
