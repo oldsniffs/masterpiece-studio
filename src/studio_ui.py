@@ -4020,7 +4020,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.content_stack.setCurrentIndex(1)
+        self.content_stack.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

@@ -63,4 +63,5 @@ LY_BLOCK_3 = """
   >>
 \\layout { }
 \\midi { }
+}
 """

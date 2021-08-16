@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
@@ -629,19 +630,24 @@ class MainWindow(QMainWindow):
 
     # prepares string
     def format_ly(self, right_lymusic, left_lymusic):
+        time_signature = self.composi
         return LY_BLOCK_1 + right_lymusic + LY_BLOCK_2 + left_lymusic + LY_BLOCK_3
 
     # writes string to .ly file
     def write_ly(self, ly):
         if not os.path.exists(self.configuration.composition_filepath):
             os.makedirs(self.configuration.composition_filepath)
-        file = open(f"{self.configuration.composition_filename}.ly", 'wb')
-        pickle.dump(ly, file)
+        file = open(f"{self.configuration.composition_filename}.ly", 'w')
+        file.write(ly)
         file.close()
 
     # Runs Lilypond on given filepath
     def run_lilypond(self, filename):
-        pass
+        working_directory = os.getcwd()
+        os.chdir(f"{self.configuration.composition_filepath}\\")
+        log_debug(f"Attempting to call lilypond on {self.configuration.composition_file_namebase}.ly from cwd {os.getcwd()}\\")
+        subprocess.call(["lilypond", f"{self.configuration.composition_file_namebase}.ly"])
+        os.chdir(working_directory)
 
 
 # Holds data that always reflects current state of the UI, via it's active_segment, updated as user modifies inputs
@@ -656,7 +662,10 @@ class Configuration:
         self.composition_cmp_filename = ""
         self.filepath = ""
         self.output = "lilypond"
+
         self.segments = [{'start': 1, 'stop': 16, 'length': 16, 'style': STANDARD_STYLE, 'measures': []}]
+        self.time_signature = (self.segments[0]['style']['timesig_num'], self.segments[0]['style']['timesig_den'])
+
         self.active_segment = self.segments[0]
 
     # Adds song data at compose time with finalized user input
@@ -681,6 +690,7 @@ class Configuration:
             } for measure in range(segment['start'], segment['stop'])]
             segment_index += 1
         self.finalize_composition_filepath()
+        self.time_
 
     def finalize_composition_filepath(self):
         self.composition_file_namebase = self.composition_name.replace(" ", "_")

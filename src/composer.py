@@ -98,6 +98,16 @@ class Composer:
 		self.fill_rhythm()
 		self.fill_pitches()
 
+		log_header(f"Note Check")
+		for segment in self.segments:
+			for measure in segment['measures']:
+				log_debug(f"right_music")
+				for note in measure['right_music']:
+					print(note)
+				log_debug(f"left_music")
+				for note in measure['left_music']:
+					print(note)
+
 	# fill_rhythms and Supporting Methods ===========
 
 	def fill_rhythm(self):
@@ -165,7 +175,7 @@ class Composer:
 
 				self.current_measure_index += 1
 				self.count = 0
-				
+
 				# With harmony implemented, this debug would need to track only a "top line" of notes somehow
 				right_beat_values = 0
 				left_beat_values = 0
@@ -207,6 +217,7 @@ class Composer:
 	# put notes in right_music or left_music
 	def distribute_duration(self, duration):
 		log_info(f"Distributing duration {duration} at count {self.count} in the {self.hand} hand")
+		duration_notes = []
 		self.remainder = duration
 		self.tracker = self.count
 		division = int(self.count)
@@ -232,26 +243,17 @@ class Composer:
 					if beat_value == self.remainder:
 						note = self.get_exact_note(beat_value)
 						log_debug(f"Found note {note['name']} with beat value {note['beat_value']} = {beat_value}")
-						self.write_note(note)
+						duration_notes.append(note)
 						self.tracker += note['beat_value']
 						self.remainder -= note['beat_value']
-						return
-
-			distance = division+1 - self.tracker
-			log_debug(f"distance to next division: {distance}")
-			fill_notes = self.fill_distance(distance, ascending=True)
-			for fn in (fill_notes[:-1]):
-				self.write_note(fn, engraving=["tie"])
-				self.tracker += fn['beat_value']
-				self.remainder -= fn['beat_value']
-			if self.remainder:
-				self.write_note(fill_notes[-1], engraving=["tie"])
 			else:
-				log_debug(f"Duration is ending, final note {fill_notes[-1]['name']} appending without tie")
-				self.write_note(fill_notes[-1])
-			self.remainder -= fill_notes[-1]['beat_value']
-			self.tracker += fill_notes[-1]['beat_value']
-
+				distance = division+1 - self.tracker
+				log_debug(f"distance to next division: {distance}")
+				fill_notes = self.fill_distance(distance, ascending=True)
+				for fn in (fill_notes):
+					duration_notes.append(fn)
+					self.tracker += fn['beat_value']
+					self.remainder -= fn['beat_value']
 
 		# Previous condition guarantees tracker is now on a division
 		# Now get tracker to final division with whole beat notes
@@ -261,33 +263,30 @@ class Composer:
 			# If one note can do it, end it here
 			# Is this necessary? won't it be the first beat picked?
 			if self.remainder in self.current_style['note_beat_values']:
-				self.write_note(self.get_exact_note(self.remainder))
-				self.tracker += distance
-				self.remainder -= distance
-				return
+				duration_notes.append(self.get_exact_note(self.remainder))
+				self.tracker += self.remainder
+				self.remainder -= self.remainder
 
-			notes = self.fill_distance(distance)
-			for note in notes:
-				self.write_note(note, engraving=["tie"])
-				self.tracker += note['beat_value']
-				self.remainder -= note['beat_value']
-			# if self.tracker < self.terminus:
-			# 	self.write_note(notes[-1])
-			# 	self.tracker += notes[-1]['beat_value']
-			# 	self.remainder -= notes[-1]['beat_value']
-			# else:
-			# 	self.write_note(notes[-1], engraving=["tie"])
-			# 	self.tracker += notes[-1]['beat_value']
-			# 	self.remainder -= notes[-1]['beat_value']
-
+			else:
+				notes = self.fill_distance(distance)
+				for note in notes:
+					duration_notes.append(note)
+					self.tracker += note['beat_value']
+					self.remainder -= note['beat_value']
 
 		# final_division reached with a remainder
 		if self.remainder:
 			log_debug(f"In duration's final division: {final_division}, at tracker {self.tracker} with remainder: {self.remainder}")
 			notes = self.fill_distance(self.remainder)
-			for note in notes[:-1]:
-				self.write_note(note, engraving=["tie"])
-			self.write_note(notes[-1])
+			for note in notes:
+				duration_notes.append(note)
+
+		for d in range(len(duration_notes)):
+			if d == len(duration_notes)-1:
+				self.write_note(duration_notes[d])
+			else:
+				self.write_note(duration_notes[d], engraving=["tie"])
+
 
 	def distribute_duration_while_loop(self, duration):  # Alternative implementation
 		# Prepare variables for loop
@@ -336,14 +335,14 @@ class Composer:
 		for note in self.current_style['note_sheet_descending']:
 			if note['beat_value'] <= distance:
 				f"got {note['name']} note, beat value: {note['beat_value']}"
-				return note
+				return note.copy()
 
 	def get_exact_note(self, distance):
 		log_debug(f"getting exact note for distance {distance}")
 		for note in self.current_style['note_sheet_descending']:
 			if note['beat_value'] == distance:
 				f"success! {note['name']} note, beat value: {note['beat_value']}, matches desired beat value of {distance}"
-				return note
+				return note.copy()
 			else:
 				f"failure! this shouldn't happen"
 
@@ -375,6 +374,7 @@ class Composer:
 		for segment in self.segments:
 			for measure in segment['measures']:
 				for note in measure['left_music']:
+					log_debug(f"Adding pitch to {note}")
 					note['spn'] = "A3"
 				for note in measure['right_music']:
 					note['spn'] = "E4"
