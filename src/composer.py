@@ -222,6 +222,7 @@ class Composer:
 	def distribute_duration(self, duration):
 		log_info(f"Distributing duration {duration} at count {self.count} in the {self.hand} hand")
 		duration_notes = []
+		engraving = ""
 		self.remainder = duration
 		self.tracker = self.count
 		division = int(self.count)
@@ -288,10 +289,14 @@ class Composer:
 				duration_notes.append(note)
 
 		for d in range(len(duration_notes)):
-			if d == len(duration_notes)-1 and self:
+			if d == len(duration_notes)-1:
 				self.write_note(duration_notes[d])
 			else:
-				self.write_note(duration_notes[d], engraving=["tie"])
+				# *** Snap Roll ***
+				if random.randint(1, 100) < self.current_style['snap']:
+					self.write_note(duration_notes[d])
+				else:
+					self.write_note(duration_notes[d], engraving=["tie"])
 
 
 	def distribute_duration_while_loop(self, duration):  # Alternative implementation
@@ -378,13 +383,39 @@ class Composer:
 
 	def fill_pitches(self): # hard coded while dev
 		for segment in self.segments:
+			tying = False
+			tying_pitch = ""
 			for measure in segment['measures']:
 				for note in measure['left_music']:
 					log_debug(f"Adding pitch to left  {note}")
-					note['spn'] = f"{self.temp_pitch_maker()}3"
+					if "tie" in note['engraving']:
+						log_debug(f"Note ties to the next")
+						if tying:
+							note['spn'] = tying_pitch
+						else:
+							note['spn'] = f"{self.temp_pitch_maker()}3"
+							tying_pitch = note['spn']
+							tying = True
+					elif tying:  # note terminates tie
+						note['spn'] = tying_pitch
+						tying = False
+					else:
+						note['spn'] = f"{self.temp_pitch_maker()}3"
 				for note in measure['right_music']:
 					log_debug(f"Adding pitch to right {note}")
-					note['spn'] = f"{self.temp_pitch_maker()}4"
+					if "tie" in note['engraving']:
+						log_debug(f"Note ties to the next")
+						if tying:
+							note['spn'] = tying_pitch
+						else:
+							note['spn'] = f"{self.temp_pitch_maker()}4"
+							tying_pitch = note['spn']
+							tying = True
+					elif tying:  # note terminates tie
+						note['spn'] = tying_pitch
+						tying = False
+					else:
+						note['spn'] = f"{self.temp_pitch_maker()}4"
 
 	def temp_pitch_maker(self):
 		log_debug(len(PITCHES))
