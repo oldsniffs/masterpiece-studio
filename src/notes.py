@@ -7,6 +7,7 @@ The function "get_sheets" takes a timesig_den and returns ordered lists of durat
 """
 
 
+PITCHES = ["A", "B", "C", "D", "E", "F", "G"]
 
 
 # Note Data

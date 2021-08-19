@@ -1,7 +1,5 @@
 import random
-import os
 
-from custom_logging import *
 from notes import *
 
 """
@@ -60,9 +58,15 @@ notes are: {'name':, real world note name,
 			
 * "<-" means it gets added in by the Composer class
 
+engraving arguments: 
+"tie"
+"chord <space separated spn pitch>" --> makes copies of note with given pitches
 
 fill_music generates music, filling in each measure's ['music'] list
 self.full_music() returns full music lists for right and left hands
+
+8/18 composite duration weights, ie durations not based on a note's beat value, only require ui input components
+
 """
 
 
@@ -241,7 +245,7 @@ class Composer:
 			# If terminus ends on a division and distance to terminus can use a single note, do it
 			if self.terminus == int(self.terminus) and not overflowed:
 				log_debug(f"Terminus {self.terminus} is on a division. Trying to match an exact note for remainder {self.remainder}")
-				for beat_value in self.current_style['note_beat_values']:
+				for beat_value in self.current_style['note_beat_values'][0:13]:
 					if beat_value == self.remainder:
 						note = self.get_exact_note(beat_value)
 						log_debug(f"Found note {note['name']} with beat value {note['beat_value']} = {beat_value}")
@@ -252,7 +256,7 @@ class Composer:
 				distance = division+1 - self.tracker
 				log_debug(f"distance to next division: {distance}")
 				fill_notes = self.fill_distance(distance, ascending=True)
-				for fn in (fill_notes):
+				for fn in fill_notes:
 					duration_notes.append(fn)
 					self.tracker += fn['beat_value']
 					self.remainder -= fn['beat_value']
@@ -376,10 +380,17 @@ class Composer:
 		for segment in self.segments:
 			for measure in segment['measures']:
 				for note in measure['left_music']:
-					log_debug(f"Adding pitch to {note}")
-					note['spn'] = "A3"
+					log_debug(f"Adding pitch to left  {note}")
+					note['spn'] = f"{self.temp_pitch_maker()}3"
 				for note in measure['right_music']:
-					note['spn'] = "E4"
+					log_debug(f"Adding pitch to right {note}")
+					note['spn'] = f"{self.temp_pitch_maker()}4"
+
+	def temp_pitch_maker(self):
+		log_debug(len(PITCHES))
+		pitch_index = random.randint(0, len(PITCHES)-1)
+		log_debug(f"got pitch index {pitch_index}")
+		return PITCHES[pitch_index]
 
 	# Generation Utility =============================
 

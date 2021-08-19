@@ -1,5 +1,5 @@
 import sys
-import os
+import os 
 import subprocess
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
@@ -226,6 +226,10 @@ class MainWindow(QMainWindow):
 
     def refresh_composition_name(self):
         self.ui.composition_name_entry.setText(self.configuration.composition_name)
+
+    # Structure
+    def refresh_style_color(self, style):
+        pass
 
     # Rhythm /////
 
