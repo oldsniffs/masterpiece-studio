@@ -78,6 +78,7 @@ def get_sheets(timesig_den):
 
 
 if __name__ == "__main__":
+	config_log()
 	duration_sheet, note_sheet, note_beat_values, note_sheet_ascending, note_sheet_descending = get_sheets(4)
 	print(note_sheet_descending)
 	print(note_sheet)

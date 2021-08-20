@@ -1,5 +1,5 @@
 import sys
-import os 
+import os
 import subprocess
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
@@ -732,4 +732,15 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
 
+    # Create the logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    # Remove PySide6 (or other) handlers
+    for h in logger.handlers:
+        logger.removeHandler(h)
+
+    config_log()
+
     sys.exit(app.exec_())
+

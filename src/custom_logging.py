@@ -12,7 +12,7 @@ def timestamp():
 
 def filename_timestamp():
 	now = datetime.datetime.now()
-	return f"{now.month}-{now.day}-{now.hour}-{now.minute}"
+	return f"{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}"
 
 
 def log_debug(message, source='', display=True):
@@ -56,6 +56,7 @@ def log_rhythm(message, source='', display=True):
 	if display:
 		print(f"(RHYTHM){timestamp()}{source} -- {message}")
 	logging.info(f"(RHYTHM): {message}")
-	
 
-config_log()
+
+if __name__ == "__main__":
+	config_log()

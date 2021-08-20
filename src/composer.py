@@ -359,7 +359,7 @@ class Composer:
 
 	# increments count and live durations, removes dead ones
 	def increment_count(self):
-		log_debug(f"Incrementing count: {self.count} by {self.increment}")
+		# log_debug(f"Incrementing count: {self.count} by {self.increment}")
 		self.count += self.increment
 		self.tracker = 0
 		self.hand = "right" # for debug
@@ -377,7 +377,7 @@ class Composer:
 			self.hand = "left" # for debug
 
 		if self.count % .25 == 0:
-			log_info(f"Increment brings count to {self.count}")
+			log_info(f"With this increment, count is now {self.count}")
 
 	# fill_pitches and Supporting Methods ============
 
