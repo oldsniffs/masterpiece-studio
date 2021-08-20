@@ -1,6 +1,4 @@
 import sys
-import os
-import subprocess
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
@@ -509,24 +507,6 @@ class MainWindow(QMainWindow):
             pitch = FLAT_OCTAVE[index % 12]
         return f"{octave}{pitch}"
 
-    def spn_to_ly(self, spn):
-        ly = spn[0].lower() # start with pitch
-
-        if "♯" in spn:  # add accidental
-            ly.append("is")
-        elif "♭" in spn:
-            ly.append("es")
-
-        octave = int(spn[-1])  # for each octave above or below 3 (middle octave), add "'" or ","
-        while octave != 3:
-            if octave < 3:
-                ly += ","
-                octave += 1
-            else:
-                ly += "'"
-                octave -= 1
-        return ly
-
     def index_to_ly(self, index, mode):
         if mode == "♯":
             return SHARP_PITCHES[index]
@@ -571,86 +551,15 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_song_parameters()
+        #TODO Purge all configuration references that should be in composition
         self.composition = Composer(self.configuration)
 
         log_debug(f"{self.composition.note_tally}")
 
         if self.configuration.output == "lilypond":
-            log_header(f"Beginning lilypond output process")
-            right_lynotation, left_lynotation = self.extract_lynotation(self.composition)
-            right_lymusic, left_lymusic = self.write_lymusic(right_lynotation, left_lynotation)
-
-            log_debug(f"right_lymusic: {right_lymusic}")
-
-            ly = self.format_ly(right_lymusic, left_lymusic)
-            self.write_ly(ly)
-            self.run_lilypond(self.composition.filename)
-
-    # Prepares lynotation from composition.segments
-    # separated by lilypond measure dividers: "|"
-    # Presumably it is better to build lists to combine into strings, than rebuilding strings for each addition
-    def extract_lynotation(self, composition):
-        left_lynotation = []
-        right_lynotation = []
-        for segment in composition.segments:
-            for measure in segment['measures']:
-                measure_left_lynotation = []
-                measure_right_lynotation = []
-                for note in measure['right_music']:
-                    measure_right_lynotation.append(f"{self.note_to_ly(note)}")
-                measure_right_lynotation.append("\n")
-                for note in measure['left_music']:
-                    measure_left_lynotation.append(f"{self.note_to_ly(note)}")
-                measure_left_lynotation.append("\n")
-                right_lynotation.append(measure_right_lynotation)
-                left_lynotation.append(measure_left_lynotation)
-                log_debug(f"from measure {measure['number']} right_music extracted ly music: {measure_right_lynotation}")
-                log_debug(f"from measure {measure['number']} left_music extracted ly music:  {measure_left_lynotation}")
-        return right_lynotation, left_lynotation
-
-    def note_to_ly(self, note):
-        tie = ""
-        lypitch = self.spn_to_ly(note['spn'])
-        lynote = self.beat_value_to_ly(note)
-        if "tie" in note['engraving']:
-            tie = "~"
-        return f"{lypitch}{lynote}{tie}"
-
-    # spn_to_ly is up with range ui methods
-    def beat_value_to_ly(self, note):
-        return LY_NOTE_NOTATIONS[note['masterpiece_index']]
-
-    def write_lymusic(self, right_lynotation, left_lynotation):
-        right_lymusic = []
-        left_lymusic = []
-        for measure in right_lynotation:
-            right_lymusic.append(" ".join(measure))
-        for measure in left_lynotation:
-            left_lymusic.append(" ".join(measure))
-        right_lymusic = "".join(right_lymusic)
-        left_lymusic = "".join(left_lymusic)
-        return right_lymusic, left_lymusic
-
-    # prepares string
-    def format_ly(self, right_lymusic, left_lymusic):
-
-        return LY_BLOCK_1 + right_lymusic + LY_BLOCK_2 + left_lymusic + LY_BLOCK_3
-
-    # writes string to .ly file
-    def write_ly(self, ly):
-        if not os.path.exists(self.configuration.composition_filepath):
-            os.makedirs(self.configuration.composition_filepath)
-        file = open(f"{self.configuration.composition_filename}.ly", 'w')
-        file.write(ly)
-        file.close()
-
-    # Runs Lilypond on given filepath
-    def run_lilypond(self, filename):
-        working_directory = os.getcwd()
-        os.chdir(f"{self.configuration.composition_filepath}\\")
-        log_debug(f"Attempting to call lilypond on {self.configuration.composition_file_namebase}.ly from cwd {os.getcwd()}\\")
-        subprocess.call(["lilypond", f"{self.configuration.composition_file_namebase}.ly"])
-        os.chdir(working_directory)
+            import lily
+            output = Lily(self.composition)
+            output.output()
 
 
 # Holds data that always reflects current state of the UI, via it's active_segment, updated as user modifies inputs

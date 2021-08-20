@@ -78,6 +78,7 @@ class Composer:
 		self.name = configuration.composition_name
 		self.filename = configuration.composition_filename
 		self.filepath = configuration.composition_filepath
+		self.file_namebase = configuration.composition_file_namebase
 
 		self.segments = configuration.segments
 
