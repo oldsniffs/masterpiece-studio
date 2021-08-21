@@ -405,6 +405,7 @@ class MainWindow(QMainWindow):
         log_debug(f"updating keysig from: {self.sender().objectName()}")
         component = self.sender().objectName()[:-6]
         self.active_style[component] = self.sender().currentText()
+        log_debug(self.active_style[component])
 
     def refresh_keysig_component(self, component):
         log_debug(f"refreshing keysig  component: {component}")
@@ -550,7 +551,7 @@ class MainWindow(QMainWindow):
     # writes .ly
     # call lilypond subprocess
     def compose(self):
-        self.configuration.finalize_song_parameters()
+        self.configuration.finalize_composition_parameters()
         #TODO Purge all configuration references that should be in composition
         self.composition = Composer(self.configuration)
 
@@ -563,7 +564,7 @@ class MainWindow(QMainWindow):
 
 
 # Holds data that always reflects current state of the UI, via it's active_segment, updated as user modifies inputs
-# Has method finalize_song_parameters to prepare a Composition-ready data structure
+# Has method finalize_composition_parameters to prepare a Composition-ready data structure
 # Configuration segments store user data, Composition-ready segments are outputted from them
 class Configuration:
     def __init__(self, name):
@@ -581,7 +582,20 @@ class Configuration:
         self.active_segment = self.segments[0]
 
     # Adds song data at compose time with finalized user input
-    def finalize_song_parameters(self):
+    def finalize_composition_parameters(self):
+        self.finalize_song_info()
+        self.finalize_segments()
+        self.finalize_composition_filepath()
+
+    def finalize_song_info(self):
+        self.keysig_pitch = self.segments[0]['style']['keysig_pitch'].lower()
+        scale = self.segments[0]['style']['keysig_scale'].lower()
+        for minor_type in ["harmonic", "melodic"]:
+            if minor_type in scale:
+                scale = minor_type
+        self.keysig_scale = scale
+
+    def finalize_segments(self):
         segment_index = 0
         for segment in self.segments:
             segment['index'] = segment_index
@@ -601,8 +615,6 @@ class Configuration:
                 'left_music':[]
             } for measure in range(segment['start'], segment['stop'])]
             segment_index += 1
-        self.finalize_composition_filepath()
-        # Do time sig
 
     def finalize_composition_filepath(self):
         self.composition_file_namebase = self.composition_name.replace(" ", "_")

@@ -80,6 +80,9 @@ class Composer:
 		self.filepath = configuration.composition_filepath
 		self.file_namebase = configuration.composition_file_namebase
 
+		self.keysig_pitch = configuration.keysig_pitch
+		self.keysig_scale = configuration.keysig_scale
+		self.timesig = f"{configuration.segments[0]['style']['timesig_num']}/{configuration.segments[0]['style']['timesig_den']}"
 		self.segments = configuration.segments
 
 		# Initialize Dynamic Generation Variables

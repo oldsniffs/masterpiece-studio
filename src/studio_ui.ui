@@ -5640,7 +5640,7 @@ QLineEdit:checked:hover {
                           </property>
                           <item>
                            <property name="text">
-                            <string>Major</string>
+                            <string>Major </string>
                            </property>
                           </item>
                           <item>
@@ -5650,12 +5650,42 @@ QLineEdit:checked:hover {
                           </item>
                           <item>
                            <property name="text">
-                            <string>Minor (harmonic)</string>
+                            <string>Harmonic Minor</string>
                            </property>
                           </item>
                           <item>
                            <property name="text">
-                            <string>Minor (melodic)</string>
+                            <string>Melodic Minor</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Dorian</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Phrygian</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Lydian</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Mixolydian</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Aeolian</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Locrian</string>
                            </property>
                           </item>
                          </widget>

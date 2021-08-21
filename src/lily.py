@@ -41,13 +41,23 @@ LY_NOTE_NOTATIONS = [
 ]
 
 LY_BLOCK_1 = """upper = {
-  \\clef treble"""
+    \\clef treble
+    """
 
-""""\n  \\key c \\major
+LY_BLOCK_1_OLD = """upper = {
+  \\clef treble
+  \\key bes \\major
   \\time 4/4
  
 """  # move newline to BLOCK_2?
-LY_BLOCK_2 = """
+
+LY_BLOCK_2 = """}
+
+lower = {
+    \\clef bass
+    """
+
+LY_BLOCK_2_OLD = """
 }
 
 lower = {
@@ -83,6 +93,8 @@ class Lily:
         log_debug(f"right_lymusic: {right_lymusic}")
 
         ly = self.format_ly(right_lymusic, left_lymusic)
+        log_header(f"complete ly to write:")
+        log_info(ly)
         self.write_ly(ly)
         self.run_lilypond(self.composition.filename)
 
@@ -137,10 +149,13 @@ class Lily:
 
     # prepares string
     def format_ly(self, right_lymusic, left_lymusic):
-        return LY_BLOCK_1 + right_lymusic + LY_BLOCK_2 + left_lymusic + LY_BLOCK_3
+        return LY_BLOCK_1 + self.ly_keysig() + self.ly_timesig() + right_lymusic + LY_BLOCK_2 + self.ly_keysig() + self.ly_timesig() + left_lymusic + LY_BLOCK_3
 
-    def LY_TIMESIG(self):
-        return f"\n  \\key {self.spn_to_ly()}"
+    def ly_keysig(self):
+        return f"\\key {self.composition.keysig_pitch} \\{self.composition.keysig_scale}\n    "
+
+    def ly_timesig(self):
+        return f"\\time {self.composition.timesig}\n\n"
 
     def spn_to_ly(self, spn):
         ly = spn[0].lower() # start with pitch

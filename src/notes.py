@@ -9,6 +9,18 @@ The function "get_sheets" takes a timesig_den and returns ordered lists of durat
 
 PITCHES = ["A", "B", "C", "D", "E", "F", "G"]
 
+SCALE_INTERVALS = {
+	"major": [],
+	"minor": [],
+	"harmonic": [],
+	"melodic": [],
+	"major": [],
+	"major": [],
+	"major": [],
+	"major": [],
+	"major": [],
+}
+
 
 # Note Data
 # [(name, beats per note in */4 time)]
