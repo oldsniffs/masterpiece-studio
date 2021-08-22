@@ -7,7 +7,8 @@ The function "get_sheets" takes a timesig_den and returns ordered lists of durat
 """
 
 
-PITCHES = ["A", "B", "C", "D", "E", "F", "G"]
+# takes a 0-87
+
 
 SCALE_INTERVALS = {
 	"major": [],
@@ -95,3 +96,4 @@ if __name__ == "__main__":
 	print(note_sheet_descending)
 	print(note_sheet)
 	print(note_beat_values)
+

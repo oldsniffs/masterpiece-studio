@@ -1,6 +1,7 @@
 import random
 
 from notes import *
+from harmony import *
 
 """
 Composer class
@@ -104,7 +105,7 @@ class Composer:
 
 	def fill_music(self):
 		self.fill_rhythm()
-		self.fill_pitches()
+		self.temp_fill_pitches()
 
 		log_header(f"Note Check")
 		for segment in self.segments:
@@ -383,49 +384,55 @@ class Composer:
 		if self.count % .25 == 0:
 			log_info(f"With this increment, count is now {self.count}")
 
-	# fill_pitches and Supporting Methods ============
-
-	def fill_pitches(self): # hard coded while dev
+	# temp_fill_pitches and Supporting Methods ============
+	# 8/20 Temporary System uses ranges and simply assigns randomly from within
+	def temp_fill_pitches(self): # hard coded while dev
 		for segment in self.segments:
 			tying = False
 			tying_pitch = ""
 			for measure in segment['measures']:
+				bounds = measure['style']['bounds']
+				spn_list = measure['style']['spn_list']
 				for note in measure['left_music']:
+					lower_bound = bounds['left_lower']
+					upper_bound = bounds['left_upper']
 					log_debug(f"Adding pitch to left  {note}")
 					if "tie" in note['engraving']:
 						log_debug(f"Note ties to the next")
-						if tying:
+						if tying:  # tying, and ties to next
 							note['spn'] = tying_pitch
-						else:
-							note['spn'] = f"{self.temp_pitch_maker()}3"
+						else:  # first of some tied notes
+							note['spn'] = f"{self.temp_pitch_maker(spn_list, lower_bound, upper_bound)}"
 							tying_pitch = note['spn']
 							tying = True
 					elif tying:  # note terminates tie
 						note['spn'] = tying_pitch
 						tying = False
 					else:
-						note['spn'] = f"{self.temp_pitch_maker()}3"
+						note['spn'] = f"{self.temp_pitch_maker(spn_list, lower_bound, upper_bound)}"
 				for note in measure['right_music']:
+					lower_bound = bounds['right_lower']
+					upper_bound = bounds['right_upper']
 					log_debug(f"Adding pitch to right {note}")
 					if "tie" in note['engraving']:
 						log_debug(f"Note ties to the next")
 						if tying:
 							note['spn'] = tying_pitch
 						else:
-							note['spn'] = f"{self.temp_pitch_maker()}4"
+							note['spn'] = f"{self.temp_pitch_maker(spn_list, lower_bound, upper_bound)}"
 							tying_pitch = note['spn']
 							tying = True
 					elif tying:  # note terminates tie
 						note['spn'] = tying_pitch
 						tying = False
 					else:
-						note['spn'] = f"{self.temp_pitch_maker()}4"
+						note['spn'] = f"{self.temp_pitch_maker(spn_list, lower_bound, upper_bound)}"
 
-	def temp_pitch_maker(self):
-		log_debug(len(PITCHES))
-		pitch_index = random.randint(0, len(PITCHES)-1)
+	def temp_pitch_maker(self, spn_list, lower_bound, upper_bound):
+		log_debug(f"Getting random pitch index between bounds {lower_bound}, {upper_bound}+1")
+		pitch_index = random.randint(lower_bound, upper_bound)
 		log_debug(f"got pitch index {pitch_index}")
-		return PITCHES[pitch_index]
+		return spn_list[pitch_index]
 
 	# Generation Utility =============================
 

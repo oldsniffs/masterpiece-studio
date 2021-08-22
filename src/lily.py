@@ -6,9 +6,6 @@ import subprocess
 Static variables and output functions for formatting notation
 """
 
-SHARP_OCTAVE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"]
-FLAT_OCTAVE = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"]
-
 
 # Lilypond
 
@@ -161,9 +158,9 @@ class Lily:
         ly = spn[0].lower() # start with pitch
 
         if "♯" in spn:  # add accidental
-            ly.append("is")
+            ly += "is"
         elif "♭" in spn:
-            ly.append("es")
+            ly += "es"
 
         octave = int(spn[-1])  # for each octave above or below 3 (middle octave), add "'" or ","
         while octave != 3:
@@ -177,6 +174,7 @@ class Lily:
 
     # writes string to .ly file
     def write_ly(self, ly):
+        log_debug(f"writing ly to composition filepath: {self.composition.filepath}")
         if not os.path.exists(self.composition.filepath):
             os.makedirs(self.composition.filepath)
         file = open(f"{self.composition.filename}.ly", 'w')

@@ -1,3 +1,4 @@
+import pitches
 # Default configuration
 
 DEFAULT_LENGTH = 14
@@ -76,6 +77,7 @@ STANDARD_STYLE = {
     'keysig_pitch': "C",
     'keysig_scale': "Major",
     'ranges_mode': "♯",
+    'spn_list': pitches.SHARP_SPN_LIST,
     'bounds': BOUNDS_STANDARD,
     'weights': WEIGHTS_STANDARD,
     'snap': 50,

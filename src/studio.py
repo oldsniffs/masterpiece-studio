@@ -1,6 +1,6 @@
 import sys
 import pickle
-from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 from studio_ui import Ui_MainWindow
 
@@ -32,6 +32,8 @@ class MainWindow(QMainWindow):
         self.ui.topBar_active_configuration_display.setText(self.configuration.name)
         self.ui.topBar_active_style_display.setText(self.active_style['name'])
         self.ui.compose_active_configuration_display.setText(self.configuration.name)
+        self.update_weight_total("prime")
+        self.update_weight_total("pair")
         self.refresh_full_ui()
 
     def init_ui(self):
@@ -201,6 +203,8 @@ class MainWindow(QMainWindow):
             if "length" in weight:
                 # handle length weights
                 pass
+        self.refresh_prime_total()
+        self.refresh_pair_total()
 
         # pitch
         self.refresh_bounds()
@@ -336,13 +340,36 @@ class MainWindow(QMainWindow):
         log_debug(f"updating weight from slider: {self.sender().objectName()}")
         weight = self.sender().objectName()[:-7]
         self.active_style['weights'][weight] = self.sender().sliderPosition()
+        self.update_weight_total(weight)
         self.refresh_weight(weight)
+
+    def update_weight_total(self, weight):
+        log_debug(f"updating total after change to {weight}")
+        if "prime" in weight:
+            total = 0
+            for key, value in self.active_style['weights'].items():
+                if "prime" in key:
+                    total += value
+            self.active_style['prime_total'] = total
+            self.refresh_prime_total()
+        if "pair" in weight:
+            total = 0
+            for key, value in self.active_style['weights'].items():
+                if "pair" in key:
+                    total += value
+            self.active_style['pair_total'] = total
+            self.refresh_pair_total()
 
     def refresh_weight(self, weight):  # weight format: "whole_prime""
         log_debug(f"refreshing weight: {weight}")
         self.ui.weights_arch_widget.findChild(QSlider, weight+"_slider").setValue(self.active_style['weights'][weight])
         self.ui.weights_arch_widget.findChild(QLabel, weight+"_display").setText(str(self.active_style['weights'][weight]))
 
+    def refresh_prime_total(self):
+        self.ui.prime_total_display.setText(str(self.active_style['prime_total']))
+
+    def refresh_pair_total(self):
+        self.ui.pair_total_display.setText(str(self.active_style['pair_total']))
     # \\ Snap
 
     def update_snap(self, action):
@@ -423,61 +450,80 @@ class MainWindow(QMainWindow):
         # Check that bounds don't cross
         if self.ui.left_lower_slider.sliderPosition() > self.ui.left_upper_slider.sliderPosition():
             self.active_style['bounds']['left_lower'] = self.ui.left_upper_slider.sliderPosition()
+            self.active_style['bounds']['left_lower_spn'] = index_to_spn(self.active_style,
+                                                                         self.active_style['bounds']['left_lower'])
         else:
             self.active_style['bounds']['left_lower'] = self.ui.left_lower_slider.sliderPosition()
+            self.active_style['bounds']['left_lower_spn'] = index_to_spn(self.active_style,
+                                                                         self.active_style['bounds']['left_lower'])
         self.refresh_left_lower_bound()
 
     def refresh_left_lower_bound(self):
         log_debug(f"refreshing left lower")
         self.ui.left_lower_slider.setValue(self.active_style['bounds']['left_lower'])
-        self.ui.left_lower_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['left_lower']))
+        self.ui.left_lower_display.setText(self.active_style['bounds']['left_lower_spn'])
 
     def update_left_upper_bound(self):
         log_debug(f"updating left upper")
         if self.ui.left_upper_slider.sliderPosition() < self.ui.left_lower_slider.sliderPosition():
             self.active_style['bounds']['left_upper'] = self.ui.left_lower_slider.sliderPosition()
+            self.active_style['bounds']['left_upper_spn'] = index_to_spn(self.active_style,
+                                                                         self.active_style['bounds']['left_upper'])
         else:
             self.active_style['bounds']['left_upper'] = self.ui.left_upper_slider.sliderPosition()
+            self.active_style['bounds']['left_upper_spn'] = index_to_spn(self.active_style,
+                                                                         self.active_style['bounds']['left_upper'])
         self.refresh_left_upper_bound()
 
     def refresh_left_upper_bound(self):
         log_debug(f"refreshing left upper")
         self.ui.left_upper_slider.setValue(self.active_style['bounds']['left_upper'])
-        self.ui.left_upper_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['left_upper']))
+        self.ui.left_upper_display.setText(self.active_style['bounds']['left_upper_spn'])
 
     def update_right_lower_bound(self):
         log_debug(f"updating right_lower")
         # A check could occur here to stop bound values from passing their complement (use closest allowed value)
         if self.ui.right_lower_slider.sliderPosition() > self.ui.right_upper_slider.sliderPosition():
             self.active_style['bounds']['right_lower'] = self.ui.right_upper_slider.sliderPosition()
+            self.active_style['bounds']['right_lower_spn'] = index_to_spn(self.active_style,
+                                                                          self.active_style['bounds']['right_lower'])
         else:
             self.active_style['bounds']['right_lower'] = self.ui.right_lower_slider.sliderPosition()
+            self.active_style['bounds']['right_lower_spn'] = index_to_spn(self.active_style,
+                                                                          self.active_style['bounds']['right_lower'])
         self.refresh_right_lower_bound()
 
     def refresh_right_lower_bound(self):
         log_debug(f"refreshing right lower")
         self.ui.right_lower_slider.setValue(self.active_style['bounds']['right_lower'])
-        self.ui.right_lower_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['right_lower']))
+        self.ui.right_lower_display.setText(self.active_style['bounds']['right_lower_spn'])
 
     def update_right_upper_bound(self):
         log_debug(f"updating right upper")
         if self.ui.right_upper_slider.sliderPosition() < self.ui.right_lower_slider.sliderPosition():
             self.active_style['bounds']['right_upper'] = self.ui.right_lower_slider.sliderPosition()
+            self.active_style['bounds']['right_upper_spn'] = index_to_spn(self.active_style,
+                                                                          self.active_style['bounds']['right_upper'])
         else:
             self.active_style['bounds']['right_upper'] = self.ui.right_upper_slider.sliderPosition()
+            self.active_style['bounds']['right_upper_spn'] = index_to_spn(self.active_style,
+                                                                          self.active_style['bounds']['right_upper'])
+
         self.refresh_right_upper_bound()
 
     def refresh_right_upper_bound(self):
         log_debug(f"refreshing right upper")
         self.ui.right_upper_slider.setValue(self.active_style['bounds']['right_upper'])
-        self.ui.right_upper_display.setText(self.bound_slider_index_to_spn(self.active_style['bounds']['right_upper']))
+        self.ui.right_upper_display.setText(self.active_style['bounds']['right_upper_spn'])
 
     def update_ranges_mode(self, btn):
         if btn == self.ui.sharp_ranges:
             self.active_style['ranges_mode'] = "♯"
+            self.active_style['spn_list'] = SHARP_SPN_LIST
             log_debug(f"ranges mode now sharp")
         else:
             self.active_style['ranges_mode'] = "♭"
+            self.active_style['spn_list'] = FLAT_SPN_LIST
             log_debug(f"ranges mode now flat")
         self.refresh_bounds()
 
@@ -498,15 +544,6 @@ class MainWindow(QMainWindow):
         self.ui.length_entry.setText(str(self.configuration.active_segment['length']))
 
     # UI Utility ////////////////////////////////////////////////////////////////////////////////// UI Utility
-
-    def bound_slider_index_to_spn(self, index):
-        index += 9  # fills 0 octave
-        octave = int(index / 12)
-        if self.active_style['ranges_mode'] == "♯":
-            pitch = SHARP_OCTAVE[index % 12]
-        else:
-            pitch = FLAT_OCTAVE[index % 12]
-        return f"{octave}{pitch}"
 
     def index_to_ly(self, index, mode):
         if mode == "♯":
@@ -533,8 +570,8 @@ class MainWindow(QMainWindow):
 
     def load_configuration_dialog(self):
         filename = QFileDialog.getOpenFileName(self.ui.dialog_anchor, "Load Configuration",
-                                                  f"{os.getcwd()}/configurations/", "*.cf",
-                                                  options=QFileDialog.DontUseNativeDialog)[0]
+                                               f"{os.getcwd()}/configurations/", "*.cf",
+                                               options=QFileDialog.DontUseNativeDialog)[0]
         if filename:
             try:
                 self.load_configuration(pickle.load(open(filename, 'rb')))
@@ -558,7 +595,6 @@ class MainWindow(QMainWindow):
         log_debug(f"{self.composition.note_tally}")
 
         if self.configuration.output == "lilypond":
-            import lily
             output = Lily(self.composition)
             output.output()
 
@@ -577,7 +613,14 @@ class Configuration:
         self.output = "lilypond"
 
         self.segments = [{'start': 1, 'stop': 16, 'length': 16, 'style': STANDARD_STYLE, 'measures': []}]
+
+        # Initialize items that usually rely on ui update functions
         self.time_signature = (self.segments[0]['style']['timesig_num'], self.segments[0]['style']['timesig_den'])
+
+        self.segments[0]['style']['bounds']['left_lower_spn'] = index_to_spn(self.segments[0]['style']['ranges_mode'], self.segments[0]['style']['bounds']['left_lower'])
+        self.segments[0]['style']['bounds']['left_upper_spn'] = index_to_spn(self.segments[0]['style']['ranges_mode'], self.segments[0]['style']['bounds']['left_upper'])
+        self.segments[0]['style']['bounds']['right_lower_spn'] = index_to_spn(self.segments[0]['style']['ranges_mode'], self.segments[0]['style']['bounds']['right_lower'])
+        self.segments[0]['style']['bounds']['right_upper_spn'] = index_to_spn(self.segments[0]['style']['ranges_mode'], self.segments[0]['style']['bounds']['right_upper'])
 
         self.active_segment = self.segments[0]
 
