@@ -303,7 +303,6 @@ class Composer:
 				else:
 					self.write_note(duration_notes[d], engraving=["tie"])
 
-
 	def distribute_duration_while_loop(self, duration):  # Alternative implementation
 		# Prepare variables for loop
 		while self.remainder:
@@ -383,6 +382,19 @@ class Composer:
 
 		if self.count % .25 == 0:
 			log_info(f"With this increment, count is now {self.count}")
+
+	def fill_pitches(self):
+		for segment in self.segments:
+			position = None
+
+			for measure in segment['measures']:
+				spn_list = measure['style']['spn_list']
+				for note in measure['music']:
+					if ['chord'] in note['engraving']:
+						pass
+						# chord is
+						# should each actual note get a masterpiece id?
+
 
 	# temp_fill_pitches and Supporting Methods ============
 	# 8/20 Temporary System uses ranges and simply assigns randomly from within
