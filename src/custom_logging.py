@@ -1,5 +1,6 @@
 import logging
 import datetime
+import os
 
 
 # I assume decorators or something would improve this module
@@ -30,7 +31,7 @@ def log_sub_header(message):
 
 
 def config_log():
-	logging.basicConfig(filename=f"/logs/{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
+	logging.basicConfig(filename=f"{os.getcwd()}/logs/{filename_timestamp()}.log", level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
 
 def log_info(message, source='', display=True):
