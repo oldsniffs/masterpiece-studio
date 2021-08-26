@@ -11,6 +11,7 @@ configurations/*
 compositions/*
 logs/
 debugging_logs/
+dev/
 
 .gitignore
 #design_doc.html

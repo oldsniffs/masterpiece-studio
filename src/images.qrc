@@ -1,0 +1,16 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>../data/images/icon.png</file>
+	<file>../data/images/whole.png</file>
+	<file>../data/images/half.png</file>
+	<file>../data/images/quarter.png</file>
+	<file>../data/images/eighth.png</file>
+	<file>../data/images/sixteenth.png</file>
+	<file>../data/images/thirtysecond.png</file>
+	<file>../data/images/sixtyfourth.png</file>
+	<file>../data/images/keyboard-cat.png</file>
+	<file>../data/images/composer.pnc</file>
+</qresource>
+
+
+</RCC>

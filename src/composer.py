@@ -119,6 +119,10 @@ class Composer:
 
 	# fill_rhythms and Supporting Methods ===========
 
+	# For tighter code:
+	# Could use for self.hand = for hand in "left", "right"
+	# If live durations were moved to segment or above, it could be accessed with string formatting
+
 	def fill_rhythm(self):
 		log_header(f"Filling Music")
 
@@ -158,10 +162,6 @@ class Composer:
 							# load planned duration into live
 							pass
 
-						# For tighter code:
-						# Could use for self.hand = for hand in "left", "right"
-						# If live durations were moved to segment or above, it could be accessed with string formatting
-
 						# Right
 						self.hand = "right"
 
@@ -178,7 +178,13 @@ class Composer:
 						# Left
 						self.hand = "left"
 						if not self.left_live_durations:
-							self.new_duration()
+							prime = self.new_duration()
+
+							# if starting strong and rolling pair
+							if self.check_run_eligibility(prime['beat_value'], self.count) and random.randint() <= self.current_style['weigh']:
+
+
+							self.distribute_duration(prime)
 
 						self.increment_count()
 
@@ -219,8 +225,7 @@ class Composer:
 		log_sub_header(f"New {self.hand} prime duration: {prime}")
 		self.current_measure[f'{self.hand}_durations'].append((prime, self.count))
 		self.__dict__[f'{self.hand}_live_durations'].append(prime)  # ref to duration, life
-
-		self.distribute_duration(prime)
+		return prime
 
 	# chops up duration into notes
 	# put notes in right_music or left_music
@@ -395,7 +400,6 @@ class Composer:
 						# chord is
 						# should each actual note get a masterpiece id?
 
-
 	# temp_fill_pitches and Supporting Methods ============
 	# 8/20 Temporary System uses ranges and simply assigns randomly from within
 	def temp_fill_pitches(self): # hard coded while dev
@@ -449,13 +453,13 @@ class Composer:
 	# Generation Utility =============================
 
 	# Probably Dep
-	def check_beat_strength(self, duration, count):
-		log_debug(f"Checking if a duration {duration} on count {count} is strong")
-		if (count/duration[1]) % 2 == 0:
-			log_debug(f"STRONG")
+	def check_run_eligibility(self, duration, count):
+		log_debug(f"Checking if a duration {duration} on count {count} is eligib")
+		if (count/duration) % self.current_style['duration_sheet'][3] == 0:
+			log_debug(f"ELIGIBLE")
 			return True
 		else:
-			log_debug(f"WEAK")
+			log_debug(f"INELIGIBLE")
 			return False
 
 	# Info ========================

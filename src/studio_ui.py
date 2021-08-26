@@ -12,6 +12,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
+import images_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -718,7 +719,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.whole_weight_image_2.setPixmap(QPixmap(u"../data/images/whole.png"))
+        self.whole_weight_image_2.setPixmap(QPixmap(u":/data/images/whole.png"))
         self.whole_weight_image_2.setScaledContents(True)
         self.whole_weight_image_2.setWordWrap(True)
 
@@ -742,7 +743,7 @@ class Ui_MainWindow(object):
 "	color:rgb(137, 137, 206)\n"
 "	\n"
 "}")
-        self.half_weight_image_2.setPixmap(QPixmap(u"../data/images/half.png"))
+        self.half_weight_image_2.setPixmap(QPixmap(u"../data/images/keyboard-cat.png"))
         self.half_weight_image_2.setScaledContents(True)
         self.half_weight_image_2.setWordWrap(True)
 
@@ -2233,7 +2234,7 @@ class Ui_MainWindow(object):
         self.eighth_len_two.setMaximumSize(QSize(40, 16777215))
         self.eighth_len_two.setFont(font1)
         self.eighth_len_two.setStyleSheet(u"")
-        self.eighth_len_two.setCursorPosition(0)
+        self.eighth_len_two.setCursorPosition(2)
         self.eighth_len_two.setAlignment(Qt.AlignCenter)
         self.eighth_len_two.setClearButtonEnabled(False)
 

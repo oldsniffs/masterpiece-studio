@@ -1519,7 +1519,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/whole.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/whole.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1570,7 +1570,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/half.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/half.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1621,7 +1621,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/quarter.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/quarter.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1672,7 +1672,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/eighth.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/eighth.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1723,7 +1723,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/sixteenth.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/sixteenth.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1774,7 +1774,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/thirty-second.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/thirtysecond.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -1825,7 +1825,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="pixmap">
-                              <pixmap>../data/images/sixty-fourth.png</pixmap>
+                              <pixmap resource="images.qrc">:/data/images/sixtyfourth.png</pixmap>
                              </property>
                              <property name="scaledContents">
                               <bool>true</bool>
@@ -4425,7 +4425,7 @@ QLineEdit:checked:hover {
                               <string/>
                              </property>
                              <property name="cursorPosition">
-                              <number>0</number>
+                              <number>2</number>
                              </property>
                              <property name="alignment">
                               <set>Qt::AlignCenter</set>
@@ -8837,6 +8837,8 @@ QPushButton:focus {
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>

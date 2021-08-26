@@ -1,7 +1,8 @@
 import sys
 import pickle
 from PySide6.QtWidgets import QApplication, QMainWindow, QButtonGroup, QSlider, QLabel, QDial, QAbstractSlider, QComboBox, QFileDialog, QPushButton
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QDir
+from PySide6.QtGui import QIcon
 from studio_ui import Ui_MainWindow
 
 from default_settings import *
@@ -16,14 +17,13 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.animation = None
-
         self.composition = None
         self.configuration = None
         self.active_style = None
         self.load_configuration(Configuration("unnamed"))
 
         self.init_ui()
-        self.refresh_full_ui()
+        # self.refresh_full_ui()
 
     # Configuration ////////////////
     def load_configuration(self, configuration):
@@ -38,6 +38,9 @@ class MainWindow(QMainWindow):
 
     def init_ui(self):
 
+
+        # Icon
+        self.setWindowIcon(QIcon("data/images/icon.png"))
         # HOW TO FIND A CHILD
         print(self.ui.weights_arch_widget.findChild(QSlider, "half_prime_slider"))
 
@@ -589,7 +592,6 @@ class MainWindow(QMainWindow):
     # call lilypond subprocess
     def compose(self):
         self.configuration.finalize_composition_parameters()
-        #TODO Purge all configuration references that should be in composition
         self.composition = Composer(self.configuration)
 
         log_debug(f"{self.composition.note_tally}")
