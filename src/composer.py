@@ -66,6 +66,12 @@ engraving arguments:
 ** Tricky Bit: hand_durations holds (beat value, starting count) but live_durations only holds integers. By the time
 it is loaded into live, count has served its purpose
 
+Duration flow:
+prime adds a (value, self.count) to hand_durations
+cycle through hand_durations, when count == start, distribute and put value into live_durations
+live gets incremented by increment_count
+Accomodates many situations
+
 fill_music generates music, filling in each measure's ['music'] list
 self.full_music() returns full music lists for right and left hands
 
@@ -169,15 +175,6 @@ class Composer:
 						if self.current_measure['kites']:  # Place to process kites
 							# load planned duration into live
 							pass
-
-
-
-						###### COMEBACK I got mixed up on durations, live durations, and where a count is needed
-						## cycle through durations
-						## when count == start, distribute and put value into live_durations
-						## live gets iterated by increment_count
-						## Accomodates many situations
-
 
 						# Right
 						self.hand = "right"
