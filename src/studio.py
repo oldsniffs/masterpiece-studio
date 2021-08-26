@@ -687,7 +687,8 @@ class Configuration:
                         weights['sixteenth_pair'], weights['thirtysecond_pair'],
                         weights['sixtyfourth_pair']]
 
-        length_weights = []
+        length_weights = [weights['eighth_length'], weights['sixteenth_length'],
+                          weights['thirtysecond_length'], weights['sixtyfourth_length']]
 
         return prime_weights, prime_weights, pair_weights, length_weights
 

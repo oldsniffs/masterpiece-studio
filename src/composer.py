@@ -63,6 +63,9 @@ engraving arguments:
 "tie"
 "chord <space separated spn pitch>" --> makes copies of note with given pitches
 
+** Tricky Bit: hand_durations holds (beat value, starting count) but live_durations only holds integers. By the time
+it is loaded into live, count has served its purpose
+
 fill_music generates music, filling in each measure's ['music'] list
 self.full_music() returns full music lists for right and left hands
 
@@ -141,18 +144,23 @@ class Composer:
 					self.next_measure = None
 				log_header(f"Filling Measure: {measure['number']}")
 				# Load overflow into live_durations
+
+				# Picks up durations starting on this count, which means they have been specially placed
+				for duration in self.current_measure['right_durations']:
+					if duration[1] == self.count:
+						pass
+
+				# Could probably just have flow_over insert the durations for loop to pick up
 				if measure['kites']['overflow']:
 					log_debug(f"Overflow kite ")
 					self.hand = "right"
 					for duration in self.current_measure['right_durations']:
 						log_debug(f"found overflow in right_durations: {duration}")
-						self.distribute_duration(duration)
-						self.right_live_durations.append(duration)
+						self.right_live_durations.append(duration[1])
 					self.hand = "left"
 					for duration in self.current_measure['left_durations']:
 						log_info(f"found overflow in left_durations: {duration}")
-						self.distribute_duration(duration)
-						self.left_live_durations.append(duration)
+						self.left_live_durations.append(duration[1])
 
 				for beat in range(self.current_measure['style']['timesig_num']):
 					log_sub_header(f"== Measure {measure['number']} -- Beat {beat} ==")
@@ -162,6 +170,15 @@ class Composer:
 							# load planned duration into live
 							pass
 
+
+
+						###### COMEBACK I got mixed up on durations, live durations, and where a count is needed
+						## cycle through durations
+						## when count == start, distribute and put value into live_durations
+						## live gets iterated by increment_count
+						## Accomodates many situations
+
+
 						# Right
 						self.hand = "right"
 
@@ -169,22 +186,34 @@ class Composer:
 						# New Prime
 						if not self.right_live_durations:
 							# Adjust weights -- [f'{self.hand}_prime_weights']
-							weights = self.current_style['right_prime_weights']
 
-							self.weigh_meter_strength(weights)
+							prime, prime_index = self.new_duration()
+							measure[f'{self.hand}_durations'].append((prime, self.count))
 
-							self.new_duration()
+							# if starting strong and rolling pair
+							if self.check_run_eligibility(prime, self.count) and random.randint(1, 100) <= self.current_style['pair_weights'][prime_index]:
+								# get length
+								length_weights = self.current_style['length_weights'][prime_index-3]  # -3 because it starts at eighth notes
+
+						for duration in measure['right_durations']:
+							if duration[1] == self.count:
+								self.distribute_duration(duration[0])
+								self.__dict__[f'{self.hand}_live_durations'].append(duration[0])  # ref to duration, life
 
 						# Left
 						self.hand = "left"
 						if not self.left_live_durations:
-							prime = self.new_duration()
+							prime, prime_index = self.new_duration()
 
 							# if starting strong and rolling pair
-							if self.check_run_eligibility(prime['beat_value'], self.count) and random.randint() <= self.current_style['weigh']:
+							if self.check_run_eligibility(prime, self.count) and random.randint(1, 100) <= self.current_style['pair_weights'][prime_index]:
+								# get length
+								length_weights = self.current_style['length_weights'][prime_index-3]  # -3 because it starts at eighth notes
 
-
-							self.distribute_duration(prime)
+						# distribute any live durations beginning on this count
+						for duration in self.right_live_durations:
+							if duration == self.count:
+								self.distribute_duration(duration)
 
 						self.increment_count()
 
@@ -221,11 +250,10 @@ class Composer:
 
 	# Return duration index
 	def new_duration(self):
-		prime = self.current_measure['style']['duration_sheet'][random.choices(PRIME_DURATIONS_INDEX, self.current_measure['style'][f'{self.hand}_prime_weights'])[0]] # a random duration from the duration_sheet
+		prime_index = random.choices(PRIME_DURATIONS_INDEX, self.current_measure['style'][f'{self.hand}_prime_weights'])[0]
+		prime = self.current_measure['style']['duration_sheet'][prime_index]
 		log_sub_header(f"New {self.hand} prime duration: {prime}")
-		self.current_measure[f'{self.hand}_durations'].append((prime, self.count))
-		self.__dict__[f'{self.hand}_live_durations'].append(prime)  # ref to duration, life
-		return prime
+		return prime, prime_index
 
 	# chops up duration into notes
 	# put notes in right_music or left_music
@@ -324,7 +352,7 @@ class Composer:
 		self.terminus -= overflow
 		self.remainder -= overflow
 		if self.next_measure:
-			self.next_measure[f'{self.hand}_durations'].append(overflow)
+			self.next_measure[f'{self.hand}_durations'].append((overflow, 0))
 			self.next_measure['kites']['overflow'] = True
 			log_debug(f"overflow {overflow} has been appended to measure {self.next_measure['number']}\nIt's durations are Right: {self.next_measure['right_durations']}\nLeft: {self.next_measure['left_durations']}")
 
@@ -454,8 +482,9 @@ class Composer:
 
 	# Probably Dep
 	def check_run_eligibility(self, duration, count):
-		log_debug(f"Checking if a duration {duration} on count {count} is eligib")
-		if (count/duration) % self.current_style['duration_sheet'][3] == 0:
+		log_debug(f"Checking if a duration {duration} on count {count} is eligible to run")
+		# is the duration run-able and does it start on a strong count
+		if duration in self.current_style['duration_sheet'][3:7] and (count/duration) % self.current_style['duration_sheet'][3] == 0:
 			log_debug(f"ELIGIBLE")
 			return True
 		else:
