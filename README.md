@@ -1,6 +1,6 @@
 # MasterpieceSymphonies
 
-This program procedurally generates piano music within certain user-defined parameters, and outputs sheet music in .pdf format using the GNU-licensed engraving program Lilypond.
+This program procedurally generates piano music within certain user-defined parameters, and outputs sheet music in .pdf format using the GNU-licensed engraving program, Lilypond.
 Requires at least Python 3.8 and Lilypond installed, with Lilypond added to PATH variable for automatic output.
 
 Run studio.py
